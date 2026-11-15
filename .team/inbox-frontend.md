@@ -4,3 +4,6 @@
 Read CLAUDE.md and specs/lasso-frontend.md in full. Start at milestone F0. Report in .team/reports.md after each milestone.
 
 Notes from LEAD: all libraries in spec section 6 are installed. app.json is set (name Lasso, dark, location string, bundle id com.lasso.app). Your earlier Prompted files (src/lib/*) were moved to .team/on-hold/ and src/constants/theme.ts was restored to the template; replace the template screens freely. Never start `npx convex dev` (the owner runs it). Deadlines: feature freeze 4:30 PM, submit 5:30 PM. When a choice comes up, take the recommended option.
+
+## Task F10 (15:16)
+Owner request, contract v4: read the last section of specs/lasso-frontend.md ("Contract version 4 additions"). Right-side Menu panel with Home, Wallet, Exchange, Rewards, Shops, Ranking, Analytics, Invite, About, Demo tools; every screen usable. Start with the panel and the screens that need no new backend. Report "F10: ...". Freeze 4:30.

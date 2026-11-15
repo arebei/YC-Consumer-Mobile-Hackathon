@@ -55,6 +55,12 @@
         "projectId": "645c8e44-232b-4039-89fa-150e9db327f5"
       }
     },
-    "owner": "yc-hackathon"
+    "owner": "yc-hackathon",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/645c8e44-232b-4039-89fa-150e9db327f5"
+    }
   }
 }
