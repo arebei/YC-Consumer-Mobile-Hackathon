@@ -15,7 +15,8 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 
 ### Whop (payments)
 - The shop pays a small fee each time a reward is redeemed. `convex/payments.ts` creates and issues a Whop invoice in the sandbox and stores its hosted payment link.
-- `WHOP_API_KEY` and `WHOP_ACCOUNT_ID` are set as Convex environment variables. `WHOP_SHOP_EMAIL` is still pending.
+- `WHOP_API_KEY`, `WHOP_ACCOUNT_ID` and `WHOP_SHOP_EMAIL` are set as Convex environment variables.
+- First live sandbox run (13:59): a test player held "Happy Cow Creamery & Tea", the season ended, and the reward was redeemed. Whop created draft invoice `pay_VMhcQG436HwYZF` for $1.00, confirming the fee is sent in dollars (`feeCents / 100`). Issuing it was refused until the sandbox business account completes Whop's account verification (`invoice_account_verification_required`). Found on the way: Whop caps a variant title at 30 characters, so the shop name moved into the item description.
 
 ### Capy (coding agent)
 - 13:36: thread `jam_01M7GJ2NQ0JGP56QYK8EKR34RN`, started via the Capy API, built `screen/`, the big-screen live map. Merged as PR #1 (`0b165fb`).
@@ -29,4 +30,5 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - 13:35: backend B2-B4 + B6. Capture, steal, blocked blocks, flags on alerts, shops, season end, rewards, demo redeem and reset, all covered by tests (34/34).
 - 13:36: Capy starts the big-screen map.
 - 13:47: Capy starts the Revyl iOS build, cloud iPhone, smoke tests and proof of changes.
-- 13:50: backend B5. The Whop sandbox fee chain (create invoice, issue, poll until paid) is deployed in `convex/payments.ts`; the live run waits on `WHOP_SHOP_EMAIL`.
+- 13:50: backend B5. The Whop sandbox fee chain (create invoice, issue, poll until paid) is deployed in `convex/payments.ts`.
+- 13:59: first live Whop run: invoice `pay_VMhcQG436HwYZF` created; issuing waits on Whop account verification of the sandbox business.

@@ -82,30 +82,41 @@ export const chargeShopFee = internalAction({
       return null;
     }
     const suffix = retry === undefined ? "" : `-r${retry}`;
-    const fail = async (step: string, error: string) => {
+    const fail = async (step: string, error: string, whopInvoiceId?: string) => {
       console.error(`Whop ${step} failed for reward ${rewardId}: ${error}`);
-      await ctx.runMutation(internal.payments.saveFee, { rewardId, feeStatus: "failed", feeError: `${step}: ${error}`.slice(0, 400) });
+      await ctx.runMutation(internal.payments.saveFee, {
+        rewardId, feeStatus: "failed", feeError: `${step}: ${error}`.slice(0, 400), ...(whopInvoiceId ? { whopInvoiceId } : {}),
+      });
       return null;
     };
 
     try {
+      // A retry after a failed issue reuses the draft invoice instead of creating a second one.
+      let invoiceId: string;
+      if (info.whopInvoiceId) {
+        invoiceId = info.whopInvoiceId;
+        console.log(`Whop invoice ${invoiceId} reused for reward ${rewardId}.`);
+      } else {
       const created = await whop("/invoices", "POST", {
         account_id: process.env.WHOP_ACCOUNT_ID,
         customer_name: info.shopName,
         email_address: process.env.WHOP_SHOP_EMAIL,
         items: [{
           quantity: 1,
-          variant: { currency: "usd", title: `Lasso redemption fee: ${info.shopName}`, initial_price: info.feeCents / 100, billing_type: "one_time" },
+          // Whop caps a variant title at 30 characters, so the shop name goes in the item description.
+          description: `Lasso redemption fee: ${info.shopName}`.slice(0, 1000),
+          variant: { currency: "usd", title: "Lasso redemption fee", initial_price: info.feeCents / 100, billing_type: "one_time" },
         }],
         memo: `Reward code ${info.code} redeemed`,
         metadata: { rewardId, shopId: info.shopId },
       }, `lasso-invoice-${rewardId}${suffix}`);
       if (!created.ok) return await fail("create", created.error);
-      const invoiceId: string = created.data.id;
+      invoiceId = created.data.id;
       console.log(`Whop invoice ${invoiceId} created: status ${created.data.status}, total ${JSON.stringify(created.data.total)}`);
+      }
 
       const issued = await whop(`/invoices/${invoiceId}/issue`, "POST", {}, `lasso-issue-${rewardId}${suffix}`);
-      if (!issued.ok) return await fail("issue", issued.error);
+      if (!issued.ok) return await fail("issue", issued.error, invoiceId);
       const token: string | null = issued.data.checkout_link ?? null;
       console.log(`Whop invoice ${invoiceId} issued: status ${issued.data.status}, checkout_link ${token ? "present" : "missing"}`);
 
