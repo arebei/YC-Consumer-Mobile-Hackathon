@@ -123,3 +123,11 @@
 - Capy section: PR #2 merged as `807f693`. Timeline: 14:40-14:54 entry added.
 - Whop entry unchanged (invoice `pay_VMhcQG436HwYZF`, issuing blocked by sandbox account verification). No email address in the file (checked).
 - File to commit: `hackathon.md`.
+
+## HACK-BACKEND: B8: contract v4 points, exchange, vouchers, wallet, stats (done)
+- Deployed on fantastic-crocodile-610 (function-spec confirms): `wallet.mine`, `offers.list`, `offers.exchange`, `vouchers.use`, `stats.mine`, `leaderboard.points`, `admin.grantPoints`; `SubmitResult.pointsEarned`; seedShops creates 2 offers per shop with none; reset deletes ledger and vouchers and sets every player's points to 0 (offers stay).
+- Schema: `players.points` (optional), `ledger`, `offers`, `vouchers` with the indexes in the spec. Config: `POINTS_PER_10M = 1`, `POINTS_PER_BLOCK = 10`. Pure rule `walkPoints` in `lib/rules.ts`; `lib/ledger.ts` `addPoints` writes the balance and one ledger row together.
+- Walk ledger reason: `"Walk: <claimed> blocks, <rounded m> m"` (claimed blocks, the same number the points use).
+- Tests: new `convex/points.test.ts` (4 tests: points formula; walk points + ledger + rejected 0; exchange not enough then enough, voucher too_far / ok / already_used, points leaderboard, reset; steals in stats). `npx tsc -p convex --noEmit` clean, `npx vitest run` 38/38.
+- Live: re-ran `admin:seedShops` with assets/seed-shops.json, so there are now 8 offers (a free item for 300 and "10% off your order" for 100 at each of the 4 shops).
+- Files to commit: convex/schema.ts, convex/lib/config.ts, convex/lib/rules.ts, convex/lib/ledger.ts, convex/walks.ts, convex/admin.ts, convex/leaderboard.ts, convex/offers.ts, convex/vouchers.ts, convex/wallet.ts, convex/stats.ts, convex/points.test.ts, convex/_generated/api.d.ts, hackathon.md.

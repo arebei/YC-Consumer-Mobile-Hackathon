@@ -10,8 +10,9 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - `walks.submit` is the whole capture in one mutation. Convex runs mutations as serializable transactions, so two players racing for the same block can never both own it, with no locks.
 - Live updates: the map (`cells.all`), shop standings (`shops.list`) and steal alerts (`events.forMe`) are reactive queries, so a capture shows up on every phone and on the big screen at once.
 - Scheduled functions: `rewards.redeem` schedules `payments.chargeShopFee`, which polls Whop with `payments.checkFee`.
+- Points economy (contract v4): every captured walk earns points; `offers.exchange` spends them on shop offers and issues a voucher; every balance change writes one `ledger` row inside the same transaction, so a balance can never drift from its history.
 - The map grid is H3 hexagons (`h3-js`, resolution 11) running inside Convex functions.
-- Tests: `convex-test` + `vitest` (`npx vitest run`): 34 tests over the pure rules and the public API.
+- Tests: `convex-test` + `vitest` (`npx vitest run`): 38 tests over the pure rules and the public API.
 
 ### Whop (payments)
 - The shop pays a small fee each time a reward is redeemed. `convex/payments.ts` creates and issues a Whop invoice in the sandbox and stores its hosted payment link.
@@ -39,3 +40,4 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - 13:50: backend B5. The Whop sandbox fee chain (create invoice, issue, poll until paid) is deployed in `convex/payments.ts`.
 - 13:59: first live Whop run: invoice `pay_VMhcQG436HwYZF` created; issuing waits on Whop account verification of the sandbox business.
 - 14:40-14:54: Revyl smoke tests on a cloud iPhone 16 (iOS 27): capture 8/8, steal 9/9 (session marked failed), reward 12/12.
+- 15:28: backend B8. Points from walks, an exchange of points for shop offers, vouchers, wallet, stats and a points leaderboard; deployed with tests (38/38) and 8 offers seeded on the 4 partner shops.
