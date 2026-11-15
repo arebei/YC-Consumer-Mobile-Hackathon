@@ -18,12 +18,15 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - `WHOP_API_KEY` and `WHOP_ACCOUNT_ID` are set as Convex environment variables. `WHOP_SHOP_EMAIL` is still pending.
 
 ### Capy (coding agent)
-- 13:36: thread `jam_01M7GJ2NQ0JGP56QYK8EKR34RN`, started via the Capy API, builds `screen/`, the big-screen live map. PR to follow.
+- 13:36: thread `jam_01M7GJ2NQ0JGP56QYK8EKR34RN`, started via the Capy API, built `screen/`, the big-screen live map. Merged as PR #1 (`0b165fb`).
+- 13:47: thread `jam_01M7GJQ2EMP958N7KZH3R03BE1` runs the Revyl iOS build, installs it on a cloud iPhone, runs 3 smoke tests, and turns on Revyl proof of changes for pull requests.
 
 ### Revyl (cloud devices)
-- Not used yet.
+- Driven through Capy (thread `jam_01M7GJQ2EMP958N7KZH3R03BE1`, 13:47): iOS simulator build with the JavaScript bundled and `EXPO_PUBLIC_CONVEX_URL` set, installed on a Revyl cloud iPhone, 3 smoke tests, and proof of changes on every PR.
 
 ## Timeline (Pacific)
 - 13:33: backend B0 + B1. Every API function is deployed with typed returns; H3 loads in Convex (a 150 m loop encloses 11 blocks).
 - 13:35: backend B2-B4 + B6. Capture, steal, blocked blocks, flags on alerts, shops, season end, rewards, demo redeem and reset, all covered by tests (34/34).
 - 13:36: Capy starts the big-screen map.
+- 13:47: Capy starts the Revyl iOS build, cloud iPhone, smoke tests and proof of changes.
+- 13:50: backend B5. The Whop sandbox fee chain (create invoice, issue, poll until paid) is deployed in `convex/payments.ts`; the live run waits on `WHOP_SHOP_EMAIL`.

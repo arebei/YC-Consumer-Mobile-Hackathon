@@ -8,7 +8,10 @@ import { internal } from "./_generated/api";
 // - An inline variant needs no product.
 // - The issued invoice's `checkout_link` is a signed token, not a URL: the docs say to pass it as
 //   `link` to POST /checkout_sessions to open a checkout. That endpoint is not in the public spec,
-//   so it is tried best effort; the fee is "invoiced" either way.
+//   so it is tried best effort; the fee is "invoiced" either way. Without a link, the open invoice is
+//   emailed to WHOP_SHOP_EMAIL (POST /invoices/{id}/send) so the shop can pay it from the inbox.
+//   The native spec the docs cite (docs.whop.com/openapi/api-v1-native.json) needs a login; the
+//   public and sandbox specs have no /checkout_sessions path.
 
 // Convex exposes deployment env vars on process.env; declared here because @types/node is not installed.
 declare const process: { env: Record<string, string | undefined> };
@@ -117,6 +120,13 @@ export const chargeShopFee = internalAction({
         } else {
           console.warn(`Whop checkout session for ${invoiceId} failed (fee still invoiced): ${session.error}`);
         }
+      }
+      // No openable link: email the invoice to the shop (WHOP_SHOP_EMAIL) so it can still be paid from the inbox.
+      // checkFee picks up the payment either way. Best effort: a failure here does not fail the fee.
+      if (!feeUrl) {
+        const sent = await whop(`/invoices/${invoiceId}/send`, "POST", {}, `lasso-send-${rewardId}${suffix}`);
+        if (sent.ok) console.log(`Whop invoice ${invoiceId} emailed to the shop inbox.`);
+        else console.warn(`Whop send for ${invoiceId} failed (fee still invoiced): ${sent.error}`);
       }
 
       await ctx.runMutation(internal.payments.saveFee, { rewardId, feeStatus: "invoiced", whopInvoiceId: invoiceId, ...(feeUrl ? { feeUrl } : {}) });
