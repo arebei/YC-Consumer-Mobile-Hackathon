@@ -1,16 +1,19 @@
 {
   "expo": {
-    "name": "Prompted",
-    "slug": "prompted",
+    "name": "Lasso",
+    "slug": "lasso",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "prompted",
-    "userInterfaceStyle": "automatic",
+    "scheme": "lasso",
+    "userInterfaceStyle": "dark",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.prompted.app",
-      "supportsTablet": false
+      "bundleIdentifier": "com.lasso.app",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Lasso uses your location to record the loop you walk."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -20,7 +23,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.prompted.app"
+      "package": "com.lasso.app"
     },
     "web": {
       "output": "server",

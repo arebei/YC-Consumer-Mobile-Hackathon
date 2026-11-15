@@ -1,0 +1,6 @@
+[
+  { "name": "Happy Cow Creamery & Tea", "lat": 37.7606985, "lng": -122.3883507, "reward": "Free boba tea", "feeCents": 100 },
+  { "name": "Neighbor Bakehouse", "lat": 37.7596427, "lng": -122.3881812, "reward": "Free croissant", "feeCents": 100 },
+  { "name": "Humphry Slocombe Dogpatch", "lat": 37.7578437, "lng": -122.388112, "reward": "Free scoop", "feeCents": 100 },
+  { "name": "Piccino Coffee Bar", "lat": 37.7577332, "lng": -122.3899849, "reward": "Free coffee", "feeCents": 100 }
+]

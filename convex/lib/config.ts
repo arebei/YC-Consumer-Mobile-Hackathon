@@ -1,0 +1,21 @@
+// Every tunable number lives here. Change values only in this file.
+export const GRID: "h3" | "square" = "h3";
+export const H3_RES = 11;            // demo blocks, about 45 m across. Real neighbourhoods: 10.
+export const SQUARE_SIZE_M = 40;     // fallback grid only
+export const VENUE = { lat: 37.7607955, lng: -122.3860604 }; // YC office, 560 20th St
+export const REF_LAT = VENUE.lat;    // fallback grid only
+export const MAX_ACCURACY_M = 25;    // drop location points worse than this
+export const SPIKE_SPEED_MPS = 30;   // drop a point that implies a jump faster than this (GPS glitch)
+export const CLOSE_RADIUS_M = 25;    // loop closes when the end is this near the start
+export const MIN_LOOP_M = 150;       // minimum path length for a loop
+export const MIN_POINTS = 8;
+export const MAX_POINTS = 3000;      // reject absurd payloads
+export const MAX_SPEED_MPS = 5.6;    // about 20 km/h
+export const MAX_FAST_SHARE = 0.2;   // reject if more than 20% of distance was above MAX_SPEED_MPS
+export const MAX_CELLS = 400;        // reject loops enclosing more than this
+export const SHOP_MIN_BLOCKS = 6;    // a shop block needs a loop of at least this many blocks
+export const REDEEM_RADIUS_M = 60;
+export const DEMO_MODE = true;       // allows rewards.redeem with demo: true to skip the distance check
+export const DECAY_ENABLED = false;  // real rule: strength halves every 24 h. Off today.
+export const AROUND_RINGS = 6;       // grid.around radius in cells
+export const MAX_FLAG_CHARS = 40;    // a player's flag: one short message shown on their blocks

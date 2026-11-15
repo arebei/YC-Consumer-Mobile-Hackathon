@@ -1,0 +1,23 @@
+test:
+  metadata:
+    name: "lasso-capture"
+    platform: ios
+  build:
+    name: "Lasso"
+  blocks:
+    - type: instructions
+      step_description: "Type 'Ana' in the Nickname field, tap the first colour circle, then tap the Start button"
+    - type: instructions
+      step_description: "If a location permission dialog appears, allow location while using the app"
+    - type: validation
+      step_description: "A map is visible with a 'Start walk' button at the bottom"
+    - type: instructions
+      step_description: "Tap the 'Demo tools' button"
+    - type: instructions
+      step_description: "Tap 'Fake loop: small'"
+    - type: validation
+      step_description: "The screen says 'You claimed' followed by a number of blocks, and shows 'BLOCKS CLAIMED'"
+    - type: instructions
+      step_description: "Tap 'Back to map'"
+    - type: validation
+      step_description: "The map shows coloured hexagon blocks and the top-left chip shows a number of blocks greater than zero"
