@@ -1,0 +1,33 @@
+# Revyl Test Definition
+
+_meta:
+    remote_id: 76377045-80d6-44b1-a838-3bba9586a26d
+    remote_version: 1
+    local_version: 1
+    last_synced_at: "2026-11-15T21:53:13Z"
+    checksum: bcdb4918553ba8ebaeff4350e8a82c103bd53fbc0bc6ac1ffa09dff6258f907e
+test:
+    metadata:
+        name: lasso-steal
+        platform: ios
+    build:
+        name: Lasso
+    blocks:
+        - type: instructions
+          step_description: Type 'Ana' in the Nickname field, tap the first colour circle, then tap the Start button
+        - type: instructions
+          step_description: If a location permission dialog appears, allow location while using the app
+        - type: instructions
+          step_description: 'Tap ''Demo tools'', then tap ''Fake loop: small'', then tap ''Back to map'''
+        - type: instructions
+          step_description: Tap 'Demo tools', tap 'Add test player', type 'Sam' as the nickname, pick the second colour and confirm
+        - type: validation
+          step_description: Demo tools shows 'Acting as' with the name Sam
+        - type: instructions
+          step_description: 'Tap ''Fake loop: large'''
+        - type: validation
+          step_description: The result says some blocks 'were taken from other players'
+        - type: instructions
+          step_description: Tap 'Back to map', tap 'Demo tools', tap 'Switch player', choose Ana, then close Demo tools
+        - type: validation
+          step_description: A banner at the top says 'Sam took' some of your blocks and tells you how many blocks to enclose to take them back

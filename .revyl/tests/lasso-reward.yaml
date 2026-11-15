@@ -1,0 +1,39 @@
+# Revyl Test Definition
+
+_meta:
+    remote_id: 9a68308a-1a08-46c3-8e2c-45bb8dec2005
+    remote_version: 1
+    local_version: 1
+    last_synced_at: "2026-11-15T21:53:15Z"
+    checksum: c5a72c57b2f9e859ff60a08abc5e2a6c9bffe2c6457efca45ce116a252fdf786
+test:
+    metadata:
+        name: lasso-reward
+        platform: ios
+    build:
+        name: Lasso
+    blocks:
+        - type: instructions
+          step_description: Type 'Ana' in the Nickname field, tap the first colour circle, then tap the Start button
+        - type: instructions
+          step_description: If a location permission dialog appears, allow location while using the app
+        - type: instructions
+          step_description: Tap 'Demo tools', then tap 'Seed venue shops'
+        - type: instructions
+          step_description: 'In the Fake loop section choose ''Around: Happy Cow Creamery & Tea'', then tap ''Fake loop: small'''
+        - type: validation
+          step_description: The result says 'You claimed' and a number of blocks
+        - type: instructions
+          step_description: Tap 'Back to map'
+        - type: validation
+          step_description: The card at the bottom says 'You hold Happy Cow Creamery & Tea'
+        - type: instructions
+          step_description: Tap 'Demo tools', tap 'End the week', turn on the 'Demo redeem' switch, then close Demo tools
+        - type: instructions
+          step_description: Tap 'Shops'
+        - type: validation
+          step_description: Under 'YOUR REWARDS' there is a card for Happy Cow Creamery & Tea with 'Free boba tea' and a six-character code
+        - type: instructions
+          step_description: Tap 'Redeem'
+        - type: validation
+          step_description: The card says 'Redeemed.' and a line says Happy Cow Creamery & Tea owes, was invoiced, or paid $1.00
