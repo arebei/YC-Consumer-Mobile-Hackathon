@@ -14,6 +14,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ToastProvider } from '../components/Toast';
+import { PlayerProvider } from '../lib/player';
 import { color, space, type } from '../theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -58,10 +59,16 @@ export default function RootLayout() {
   return (
     <ConvexProvider client={convex}>
       <SafeAreaProvider>
-        <ToastProvider>
-          <StatusBar style="light" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.bg } }} />
-        </ToastProvider>
+        <PlayerProvider>
+          <ToastProvider>
+            <StatusBar style="light" />
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.bg } }}>
+              <Stack.Screen name="index" options={{ animation: 'none' }} />
+              <Stack.Screen name="join" options={{ animation: 'fade' }} />
+              <Stack.Screen name="home" options={{ animation: 'fade', gestureEnabled: false }} />
+            </Stack>
+          </ToastProvider>
+        </PlayerProvider>
       </SafeAreaProvider>
     </ConvexProvider>
   );

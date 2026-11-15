@@ -26,3 +26,12 @@
 - `npx vitest run`: 34/34 pass. `npx tsc -p convex --noEmit` clean.
 - Untested: the live Whop call (B5, next). `grid.around` was checked by hand on the deployment in B1.
 - Created `hackathon.md` at the repo root with the sponsor uses LEAD sent (Convex deployment, Whop env vars, Capy thread). If the Convex hackathon skill PR later creates its own `hackathon.md`, keep this content.
+
+## F1: Join and Home with the dark map and position or venue fallback (HACK-FRONTEND, 14:12)
+- Routing: `src/app/index.tsx` sends a stored player to `/home`, else `/join`.
+- Identity `src/lib/player.tsx`: random `deviceId` in AsyncStorage, active player `{playerId, name, color, flag}` in context and AsyncStorage (ready for Switch player in F2). Home re-syncs name/colour/flag from `players.list` and sends you back to Join if your player is gone.
+- Join `src/app/join.tsx`: "Lasso", tagline, "Nickname" (max 16), six swatches (labelled "Colour 1".."Colour 6" for Revyl), optional `FlagField` (counter from `config.maxFlagChars`), "Start" disabled until a nickname. Start calls `players.join` (flag left out when empty), then asks foreground location permission, then Home. Errors show the ConvexError sentence under the button.
+- Home `src/app/home.tsx`: full-screen dark `react-native-maps` map (Android gets a dark `customMapStyle`), cells from `cells.all` drawn already (45%/65% fill, 1.5/2.5 stroke, keyed by cellId), player chip (dot, name, "N blocks"), camera follows you until you drag, then "Recenter". "Using the venue as your location" pill when there is no fix after 8 s or permission is denied in demo mode. "Reconnecting…" pill when the Convex socket is down. Denied permission outside demo mode: "Lasso needs your location to record walks" + "Open settings". Card shows "Walk a loop to claim your first blocks." (target card proper is F5). "Start walk" goes to a placeholder Walk screen (F3).
+- Components added: `PlayerDot`, `Skeleton` (shimmer, off with Reduce Motion), `FlagText`, `FlagField`, `LassoMap`.
+- Checked: `npx tsc --noEmit` clean, `npx expo export --platform ios` builds. Not run on a device yet.
+- Human check on a phone: Join with a nickname, allow location, see the blue dot on the dark map on two phones; deny location on one and check the venue pill (demo mode) or the settings card.
