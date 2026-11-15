@@ -4,7 +4,8 @@ import type { Doc, Id } from "./_generated/dataModel";
 import { MAX_CELLS } from "./lib/config";
 import { cellBoundary, cellsInLoop } from "./lib/grid";
 import { validateWalk, type Point } from "./lib/loop";
-import { planCapture, rejected, type CellState, type ShopRef, type SubmitResult } from "./lib/rules";
+import { planCapture, rejected, walkPoints, type CellState, type ShopRef, type SubmitResult } from "./lib/rules";
+import { addPoints } from "./lib/ledger";
 import { latLng, point } from "./lib/validators";
 
 export const submit = mutation({
@@ -64,7 +65,10 @@ export const submit = mutation({
         createdAt: now });
     }
     await ctx.db.insert("walks", { playerId, points: walk.points, lengthM: walk.lengthM, cellCount: n, status: "captured", createdAt: now });
-    return plan.result;
+    // Contract v4: points for the walk, with one ledger row.
+    const pointsEarned = walkPoints(walk.lengthM, plan.result.claimed);
+    await addPoints(ctx, playerId, pointsEarned, `Walk: ${plan.result.claimed} blocks, ${Math.round(walk.lengthM)} m`, now);
+    return { ...plan.result, pointsEarned };
   },
 });
 

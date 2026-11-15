@@ -1,4 +1,4 @@
-import { SHOP_MIN_BLOCKS } from "./config";
+import { POINTS_PER_10M, POINTS_PER_BLOCK, SHOP_MIN_BLOCKS } from "./config";
 import { effectiveStrength, type RejectReason } from "./loop";
 
 // Pure game rules. No database, no clock, no randomness: everything comes in as arguments.
@@ -14,6 +14,7 @@ export type SubmitResult = {
   blocked: number;
   claimedCellIds: string[];
   notes: string[];
+  pointsEarned: number; // contract v4: 0 when rejected; walks.submit fills it for captured walks
 };
 
 export type CapturePlan = {
@@ -26,7 +27,12 @@ export type CapturePlan = {
 };
 
 export function rejected(reason: RejectReason): SubmitResult {
-  return { status: "rejected", reason, strength: 0, claimed: 0, stolen: 0, blocked: 0, claimedCellIds: [], notes: [] };
+  return { status: "rejected", reason, strength: 0, claimed: 0, stolen: 0, blocked: 0, claimedCellIds: [], notes: [], pointsEarned: 0 };
+}
+
+/** Contract v4 rule 1: points for a captured walk. */
+export function walkPoints(lengthM: number, claimed: number): number {
+  return Math.floor(lengthM / 10) * POINTS_PER_10M + POINTS_PER_BLOCK * claimed;
 }
 
 export function shopNeeded(strength: number): number {
@@ -44,7 +50,7 @@ export function planCapture(args: {
   const n = ids.length;
   const plan: CapturePlan = {
     creates: [], upgrades: [], takes: [], holdCredits: [], events: [],
-    result: { status: "captured", strength: n, claimed: 0, stolen: 0, blocked: 0, claimedCellIds: [], notes: [] },
+    result: { status: "captured", strength: n, claimed: 0, stolen: 0, blocked: 0, claimedCellIds: [], notes: [], pointsEarned: 0 },
   };
   const byVictim = new Map<string, { cellCount: number; shopId?: string }>();
 

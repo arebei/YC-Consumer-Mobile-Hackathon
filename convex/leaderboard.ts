@@ -14,3 +14,12 @@ export const top = query({
     return out.sort((a, b) => b.blocks - a.blocks).slice(0, 10);
   },
 });
+
+export const points = query({
+  args: {},
+  handler: async (ctx): Promise<{ playerId: Id<"players">; name: string; color: string; points: number }[]> =>
+    (await ctx.db.query("players").collect())
+      .map((p) => ({ playerId: p._id, name: p.name, color: p.color, points: p.points ?? 0 }))
+      .sort((a, b) => b.points - a.points)
+      .slice(0, 10),
+});

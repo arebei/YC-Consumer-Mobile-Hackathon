@@ -19,3 +19,5 @@ export const DEMO_MODE = true;       // allows rewards.redeem with demo: true to
 export const DECAY_ENABLED = false;  // real rule: strength halves every 24 h. Off today.
 export const AROUND_RINGS = 6;       // grid.around radius in cells
 export const MAX_FLAG_CHARS = 40;    // a player's flag: one short message shown on their blocks
+export const POINTS_PER_10M = 1;      // contract v4: a captured walk earns floor(lengthM / 10) * this
+export const POINTS_PER_BLOCK = 10;   // ... plus this per block claimed

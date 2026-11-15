@@ -4,7 +4,7 @@ import { v } from "convex/values";
 import { latLng, point } from "./lib/validators";
 
 export default defineSchema({
-  players: defineTable({ deviceId: v.string(), name: v.string(), color: v.string(), flag: v.optional(v.string()) })
+  players: defineTable({ deviceId: v.string(), name: v.string(), color: v.string(), flag: v.optional(v.string()), points: v.optional(v.number()) })
     .index("by_deviceId", ["deviceId"]),
   cells: defineTable({
     cellId: v.string(), boundary: v.array(latLng),
@@ -33,4 +33,12 @@ export default defineSchema({
     feeUrl: v.optional(v.string()), whopInvoiceId: v.optional(v.string()), feeError: v.optional(v.string()),
   }).index("by_playerId", ["playerId"]).index("by_shopId", ["shopId"]),
   season: defineTable({ endedAt: v.optional(v.number()) }),
+  // Contract v4: points, exchange, vouchers.
+  ledger: defineTable({ playerId: v.id("players"), delta: v.number(), reason: v.string(), createdAt: v.number() })
+    .index("by_playerId", ["playerId"]),
+  offers: defineTable({ shopId: v.id("shops"), title: v.string(), cost: v.number() }).index("by_shopId", ["shopId"]),
+  vouchers: defineTable({
+    playerId: v.id("players"), offerId: v.id("offers"), shopId: v.id("shops"), code: v.string(),
+    createdAt: v.number(), usedAt: v.optional(v.number()),
+  }).index("by_playerId", ["playerId"]),
 });
