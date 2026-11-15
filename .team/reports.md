@@ -80,3 +80,13 @@
 - Fixed LEAD's note: `FlagSheet` no longer uses `StyleSheet.absoluteFillObject`.
 - Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not run on a device.
 - Human check: phone B takes blocks from phone A, so A sees the banner and a heavy buzz; B's flag shows in A's banner and when tapping B's blocks. End the week, then the winner's Shops screen shows the code; Redeem with Demo redeem on shows "Redeemed." and a fee line.
+
+## F7: Replay, capture animation, Reset map, saved-walk resume (HACK-FRONTEND, 13:55 by the machine clock)
+- Correction: the times in my F1 to F6 headings (14:12, 14:40, 14:58, 15:24) were wrong; I wrote them without reading the clock. This one is the real time.
+- Demo tools "Replay last walk": loads `walks.last` for the active player and opens Walk drawing the path at 10x, then submits the same points with timestamps shifted so the last is now (as the active player). No captured walk: error toast "<name> has no captured walk to replay yet."
+- Capture animation on Result (`src/lib/captureAnimation.ts`): claimed cells fade 0 to 65% fill 60 ms apart (stagger shrinks for big loops so the total stays near 800 ms), then the BLOCKS CLAIMED number counts up from 0; medium haptic at the start. Reduce Motion shows the end state.
+- Walk: on loop close (auto or "Close loop") the path flashes wider for 300 ms with the success haptic.
+- Home "Resume your walk?" with "Resume" / "Discard" when a walk for this player was saved under 30 minutes ago (saved every 10 points and on pause; cleared on submit or discard).
+- "Reset map" with its in-panel confirm was already in F2.
+- Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not run on a device.
+- Human check: walk a real loop, then Demo tools > "Replay last walk" indoors runs start to finish and shows Result. Kill the app mid-walk (after 10+ points) and reopen: "Resume your walk?" appears.

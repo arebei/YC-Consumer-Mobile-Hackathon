@@ -22,6 +22,7 @@ import { blocks, formatDistance, formatHeld } from '../lib/format';
 import { useReduceMotion } from '../lib/motion';
 import { usePlayer } from '../lib/player';
 import { useCurrentPosition } from '../lib/position';
+import { clearWalk, loadWalk, setPendingWalk, type SavedWalk } from '../lib/savedWalk';
 import { stealParts, useStealBanner } from '../lib/stealBanner';
 import { color, radius, size, space, type } from '../theme';
 
@@ -52,6 +53,17 @@ export default function Home() {
   const [now, setNow] = useState(() => Date.now());
   const { event: steal, dismiss: dismissSteal } = useStealBanner(playerId, events);
   const pulse = useRef(new Animated.Value(0)).current;
+  const [saved, setSaved] = useState<SavedWalk | null>(null);
+
+  // A walk interrupted by a restart (saved under 30 minutes ago) is offered for resume.
+  useEffect(() => {
+    if (!playerId) return;
+    let alive = true;
+    loadWalk().then((w) => alive && setSaved(w && w.playerId === playerId ? w : null));
+    return () => {
+      alive = false;
+    };
+  }, [playerId]);
 
   // Keep the stored player in step with the server (name, colour, flag), or send them to Join if gone.
   useEffect(() => {
@@ -237,6 +249,33 @@ export default function Home() {
           <Button label="Recenter" variant="secondary" size="medium" onPress={() => setFollow(true)} style={styles.recenter} />
         )}
 
+        {saved && (
+          <GlassCard style={styles.card}>
+            <Text style={[type.bodyStrong, styles.text]}>Resume your walk?</Text>
+            <View style={styles.buttonRow}>
+              <Button
+                label="Resume"
+                size="medium"
+                variant="secondary"
+                onPress={() => {
+                  setPendingWalk({ mode: 'resume', points: saved.points });
+                  setSaved(null);
+                  router.push('/walk');
+                }}
+              />
+              <Button
+                label="Discard"
+                size="medium"
+                variant="ghost"
+                onPress={() => {
+                  clearWalk();
+                  setSaved(null);
+                }}
+              />
+            </View>
+          </GlassCard>
+        )}
+
         {cell && (
           <GlassCard style={styles.card}>
             <Text style={[type.body, styles.text]}>
@@ -288,6 +327,7 @@ const styles = StyleSheet.create({
   recenter: { alignSelf: 'flex-end' },
   card: { gap: space.sm },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  buttonRow: { flexDirection: 'row', gap: space.sm },
   dot: {
     position: 'absolute',
     top: -space.xxs,

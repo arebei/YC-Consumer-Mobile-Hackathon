@@ -34,6 +34,8 @@ const REPLAY_SPEED = 10;
 const REPLAY_MAX_GAP_MS = 1500;
 const NO_FIX_HINT_MS = 8000;
 const PATH_WIDTH = 5;
+const FLASH_WIDTH = 10;
+const FLASH_MS = 300;
 
 class TimeoutError extends Error {}
 
@@ -72,6 +74,14 @@ export default function Walk() {
   const [permissionDenied, setPermissionDenied] = useState(false);
   const [noFix, setNoFix] = useState(false);
   const [follow, setFollow] = useState(true);
+  const [flash, setFlash] = useState(false);
+
+  /** Loop closes: success haptic and the path flashes for 300 ms. */
+  const loopClosed = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    setFlash(true);
+    setTimeout(() => setFlash(false), FLASH_MS);
+  };
 
   const pointsRef = useRef(points);
   pointsRef.current = points;
@@ -172,7 +182,7 @@ export default function Walk() {
     maxFar.current = Math.max(maxFar.current, toStart);
     if (phaseRef.current !== 'recording' || submitting.current) return;
     if (longEnough && maxFar.current > 2 * closeR && toStart <= closeR) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      loopClosed();
       submit();
     }
   }, [points]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -302,7 +312,7 @@ export default function Walk() {
             <Polyline
               coordinates={drawn.map(toCoord)}
               strokeColor={color.accent}
-              strokeWidth={PATH_WIDTH}
+              strokeWidth={flash ? FLASH_WIDTH : PATH_WIDTH}
               lineCap="round"
               lineJoin="round"
             />
@@ -339,7 +349,7 @@ export default function Walk() {
           <Button
             label="Close loop"
             onPress={() => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+              loopClosed();
               submit();
             }}
             loading={phase === 'submitting'}
