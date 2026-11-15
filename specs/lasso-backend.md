@@ -391,3 +391,58 @@ After B6, stay available: the Lead will send you tuning changes from the first r
 ## 11. Out of scope today
 
 Leagues and invites (everyone shares one map), the weekly reset timer, strength decay, perks for runners-up, hiding blocks near home, shop sign-up, the neighbourhood champion prize, step-count checks, AI-written alerts, saved payment methods, webhooks.
+
+## Contract version 4 additions (owner request, 15:15): points, exchange, wallet, menu
+
+Shared word for word by both specs. Everything in version 3 stays as it is. Only the Lead may change it.
+
+### New rules
+1. A captured walk earns points: `floor(lengthM / 10) + 10 * claimed`. A rejected walk earns 0. Constants `POINTS_PER_10M = 1` and `POINTS_PER_BLOCK = 10` go in `convex/lib/config.ts`.
+2. Points are spent in the exchange on shop offers. Spending creates a voucher with a code, used in person at the shop (same radius rule and demo flag as `rewards.redeem`).
+3. Every change to a balance writes one ledger row. The balance is `players.points` (missing means 0).
+
+### Schema additions
+- `players`: add `points: v.optional(v.number())`.
+- `ledger`: `{ playerId: v.id("players"), delta: v.number(), reason: v.string(), createdAt: v.number() }`, index `by_playerId`.
+- `offers`: `{ shopId: v.id("shops"), title: v.string(), cost: v.number() }`, index `by_shopId`.
+- `vouchers`: `{ playerId: v.id("players"), offerId: v.id("offers"), shopId: v.id("shops"), code: v.string(), createdAt: v.number(), usedAt: v.optional(v.number()) }`, index `by_playerId`.
+
+### Changed
+- `SubmitResult` gains `pointsEarned: number` (0 when rejected). `walks.submit` adds the points and writes a ledger row with reason `"Walk: <n> blocks, <m> m"`.
+- `admin.seedShops` also creates two offers per shop if it has none: `{ title: <reward>, cost: 300 }` and `{ title: "10% off your order", cost: 100 }`.
+- `admin.reset` also deletes `ledger`, `vouchers`, and sets every player's `points` to 0. Offers stay.
+
+### New functions
+| Function | Kind | Args | Returns |
+|---|---|---|---|
+| `wallet.mine` | query | `{ playerId }` | `{ balance: number, history: { delta, reason, createdAt }[] (newest first, at most 30), vouchers: VoucherView[] (newest first) }` |
+| `offers.list` | query | none | `OfferView[]` sorted by shop name, then cost |
+| `offers.exchange` | mutation | `{ playerId, offerId }` | `{ ok: boolean, reason?: "not_enough_points", code?: string }`; on ok: balance minus cost, ledger row `"Exchanged: <title> at <shop>"`, one voucher |
+| `vouchers.use` | mutation | `{ voucherId, lat, lng, demo?: boolean }` | `{ ok: boolean, reason?: "too_far" \| "already_used" }` |
+| `stats.mine` | query | `{ playerId }` | `{ points, blocksHeld, walks: number (captured), totalM: number (captured), stealsMade, stealsSuffered, recent: { createdAt, lengthM, cellCount, status }[] (newest first, at most 30, all statuses) }` |
+| `leaderboard.points` | query | none | `{ playerId, name, color, points }[]`, most first, at most 10 |
+| `admin.grantPoints` | mutation | `{ playerId, amount }` | `{ balance }`; ledger reason `"Demo points"` |
+
+```ts
+type OfferView = { offerId: Id<"offers">; shopId: Id<"shops">; shopName: string; shopLat: number; shopLng: number; title: string; cost: number };
+type VoucherView = { voucherId: Id<"vouchers">; offerId: Id<"offers">; shopName: string; shopLat: number; shopLng: number; title: string; code: string; createdAt: number; usedAt: number | null };
+```
+
+### App: the menu panel (frontend)
+A "Menu" button (lucide `Menu` icon with the text label "Menu") at the top right of Home opens a panel that slides in from the right over a `scrim`, on `bg`, with these rows (icon + label, each opens its screen; "Demo tools" stays as the last row and the old top-right "Demo tools" button moves into the panel, keep its exact label):
+- **Home**: closes the panel.
+- **Wallet**: balance as `hero`, "Exchange points" primary button, vouchers (code in `hero`, shop, "Use" button with the same radius/demo rule and lines as Redeem: "Used." in `success`), and the history list (+12 in `success`, -300 in `danger`).
+- **Exchange**: `offers.list` grouped by shop, with distance from the player; each offer a `Card`: title, shop, cost "300 pts" in `accent`, button "Exchange" (disabled with "You need 120 more points" when short). On success, toast "Voucher added to your wallet" and open Wallet.
+- **Rewards**: the existing "YOUR REWARDS" (season prizes from `rewards.mine`) plus unused vouchers.
+- **Shops**: the existing Shops screen.
+- **Ranking**: two tabs, "Blocks" (`leaderboard.top`) and "Points" (`leaderboard.points`); my row highlighted.
+- **Analytics**: `stats.mine`: StatNumbers (points, blocks held, walks, distance), a 7-day bar chart of metres walked built on the client from `recent` (react-native-svg), steals made / suffered, and the last walks list.
+- **Invite**: "Invite your neighbours" with the website link (`https://azizjonrahimov.github.io/YC-Consumer-Mobile-Hackathon/`), a "Share invite" button (React Native `Share`), and a QR of the link (react-native-svg; skip the QR if it costs more than 10 minutes).
+- **About**: what Lasso is (the rules in five short lines), "Built at the YC Consumer Mobile Hackathon with Convex, Capy, Revyl and Whop", the website link, version.
+- **Demo tools**: add "Add 500 points" (`admin.grantPoints`).
+The Result screen also shows "+N points" under the block count when `pointsEarned` is above 0. Home's player chip shows the balance: "12 blocks · 340 pts".
+
+### Milestones
+- **B8** (backend, 25 min): schema, `walks.submit` points, `wallet.mine`, `offers.list`, `offers.exchange`, `vouchers.use`, `stats.mine`, `leaderboard.points`, `admin.grantPoints`, seed and reset changes, tests for points, exchange (enough and not enough), voucher use twice. Push stubs with the right types first (5 min) so the frontend can import.
+- **F10** (frontend): the menu panel, Wallet, Exchange, Rewards, Ranking, Analytics, Invite, About, the Result points line and the chip balance. Build against the types as soon as B8 stubs land.
+Freeze is still 4:30 PM: if behind at 4:15, cut Analytics' chart first, then the Invite QR.
