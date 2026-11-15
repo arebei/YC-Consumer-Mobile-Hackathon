@@ -22,6 +22,8 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 ### Capy (coding agent)
 - 13:36: thread `jam_01M7GJ2NQ0JGP56QYK8EKR34RN`, started via the Capy API, built `screen/`, the big-screen live map. Merged as PR #1 (`0b165fb`).
 - 13:47: thread `jam_01M7GJQ2EMP958N7KZH3R03BE1` runs the Revyl iOS build, installs it on a cloud iPhone, runs 3 smoke tests, and turns on Revyl proof of changes for pull requests. The proof-of-changes config landed as PR #2, merged as `807f693`.
+- Thread 3, `jam_01M7GRFV7Q85SACWSPRA01YMAG`: the public website plus a GitHub Pages workflow that publishes it (PR #3). Site: https://azizjonrahimov.github.io/YC-Consumer-Mobile-Hackathon/
+- Thread 4, `jam_01M7GRX254RC2RDSPT62PZXRPA`: a playable web version of the app at `/app/` on the website, with a react-leaflet map.
 
 ### Revyl (cloud devices)
 - Driven through Capy (thread `jam_01M7GJQ2EMP958N7KZH3R03BE1`). Capy built the app on Revyl's runners: Revyl app "Lasso", build `remote-8f24f156`, an iOS simulator build with the JavaScript bundled and `EXPO_PUBLIC_CONVEX_URL` set.
@@ -29,6 +31,7 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
   - `lasso-capture`: passed, 8/8 steps. [Report](https://app.revyl.ai/tests/report?taskId=8d0725fa-4ef3-4834-b573-bf44c5c2e378). Shareable link: https://app.revyl.ai/tests/report?token=2903123c-f791-45a8-9e96-37b03be6db72
   - `lasso-steal`: all 9/9 steps passed, including the steal banner, but Revyl marks the session as failed. [Report](https://app.revyl.ai/tests/report?taskId=aedf4084-d6eb-498a-8555-78c56b358a5d)
   - `lasso-reward`: passed, 12/12 steps. [Report](https://app.revyl.ai/tests/report?taskId=514ab368-dbe8-40a0-9445-a45828df10fb)
+- After the menu panel landed (`244b564`), the 3 tests were changed to go through Menu and pushed to Revyl as v2.
 - Revyl proof of changes runs on every pull request (config in PR #2, `807f693`).
 - Backup build: EAS cloud simulator build `6f89b0dc` (Expo project `yc-hackathon`).
 
@@ -42,3 +45,5 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - 14:40-14:54: Revyl smoke tests on a cloud iPhone 16 (iOS 27): capture 8/8, steal 9/9 (session marked failed), reward 12/12.
 - 15:28: backend B8. Points from walks, an exchange of points for shop offers, vouchers, wallet, stats and a points leaderboard; deployed with tests (38/38) and 8 offers seeded on the 4 partner shops.
 - 15:32: backend B9. `admin.demoSeed` fills the demo map with 3 players (Sam, Maya, Leo) holding 3 partner shops, every block captured through the same `captureWalk` path as `walks.submit`; tests 39/39.
+- 15:34: app F10 committed (`244b564`): a Menu panel with Wallet, Exchange, Rewards, Ranking, Analytics, Invite and About, so the points economy is playable end to end (walk, earn, exchange, voucher, use at the shop). The Revyl tests now go through Menu (v2 on Revyl).
+- Capy threads 3 (website with a GitHub Pages workflow, PR #3) and 4 (playable web app at `/app/`).

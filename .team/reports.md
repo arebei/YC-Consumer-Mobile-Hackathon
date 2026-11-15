@@ -159,3 +159,9 @@
 - Note: Happy Cow and Neighbor Bakehouse are about 118 m apart, so Maya's 150 m loop overlaps Sam's by one block. Maya steals 1 block from Sam and one steal event appears in the feed (Sam keeps 6 blocks and the shop). This is the real rules at work; say if you would rather have no event and I will swap the order (Sam would then be blocked on that block instead).
 - Tests: new `convex/demo.test.ts` (holders, offers, 400 points, flag on blocks, idempotent, live 200 m steal of Happy Cow). tsc is clean and vitest passes 39/39.
 - Files to commit: convex/lib/capture.ts (new), convex/walks.ts, convex/admin.ts, convex/tsconfig.json, convex/demo.test.ts (new), hackathon.md.
+
+## HACK-BACKEND: hackathon.md: Capy threads 3 + 4, Revyl v2, menu
+- Capy: thread 3 `jam_01M7GRFV7Q85SACWSPRA01YMAG` (public website plus a GitHub Pages workflow, PR #3, with the site URL from the spec); thread 4 `jam_01M7GRX254RC2RDSPT62PZXRPA` (playable web version at `/app/`, react-leaflet map). No times given for these, so none were added.
+- Revyl: the 3 tests now go through Menu, pushed to Revyl as v2 (after `244b564`).
+- Timeline: 15:34 F10 (`244b564`) menu panel making the points economy playable end to end; plus the Capy threads 3 and 4 line. The points economy was already in the Convex section and at 15:28.
+- No email address in the file (checked). File to commit: hackathon.md. On call for fixes until 4:30.
