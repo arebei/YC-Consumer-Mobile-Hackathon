@@ -49,7 +49,10 @@ export function FlagSheet({ visible, onClose, maxChars }: Props) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.scrim} onPress={onClose} accessibilityLabel="Close" />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.anchor}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.anchor}
+        pointerEvents="box-none">
         <View style={[styles.sheet, { paddingBottom: insets.bottom + space.lg }]}>
           <Text style={[type.title2, styles.text]}>Your flag</Text>
           <Text style={[type.callout, styles.muted]}>Rivals see it on your blocks and when you take theirs.</Text>
@@ -72,7 +75,7 @@ export function FlagSheet({ visible, onClose, maxChars }: Props) {
 }
 
 const styles = StyleSheet.create({
-  scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: color.scrim },
+  scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: color.scrim },
   anchor: { flex: 1, justifyContent: 'flex-end' },
   sheet: {
     backgroundColor: color.bgRaised,

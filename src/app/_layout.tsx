@@ -69,6 +69,7 @@ export default function RootLayout() {
               <Stack.Screen name="walk" options={{ animation: 'fade', gestureEnabled: false }} />
               <Stack.Screen name="result" options={{ animation: 'fade', gestureEnabled: false }} />
               <Stack.Screen name="admin" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+              <Stack.Screen name="shops" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
             </Stack>
           </ToastProvider>
         </PlayerProvider>

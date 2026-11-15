@@ -28,6 +28,7 @@ import { useToast } from '../components/Toast';
 import { errorMessage } from '../lib/format';
 import { usePlayer } from '../lib/player';
 import { useCurrentPosition } from '../lib/position';
+import { setPendingWalk } from '../lib/savedWalk';
 import { demoRedeem, lastResult, useStore } from '../lib/store';
 import { color, playerColors, radius, size, space, type } from '../theme';
 
@@ -69,6 +70,7 @@ export default function Admin() {
   const config = useQuery(api.config.public);
   const players = useQuery(api.players.list);
   const shops = useQuery(api.shops.list);
+  const lastWalk = useQuery(api.walks.last, player ? { playerId: player.playerId } : 'skip');
   const { position } = useCurrentPosition(config?.center, config?.demoMode);
 
   const join = useMutation(api.players.join);
@@ -278,6 +280,20 @@ export default function Admin() {
               disabled={!player}
             />
           </View>
+          <Button
+            label="Replay last walk"
+            size="medium"
+            variant="secondary"
+            disabled={!player || lastWalk === undefined}
+            onPress={() => {
+              if (!lastWalk || lastWalk.points.length === 0) {
+                toast.error(`${player?.name ?? 'This player'} has no captured walk to replay yet.`);
+                return;
+              }
+              setPendingWalk({ mode: 'replay', points: lastWalk.points });
+              router.replace('/walk');
+            }}
+          />
         </Section>
 
         {/* Shops */}
