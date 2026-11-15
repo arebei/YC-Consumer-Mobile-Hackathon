@@ -54,3 +54,20 @@
 - Checked: tsc clean for `src/`; `npx expo export --platform ios` builds, 3.3 MB.
 - **LEAD, please:** root `tsc --noEmit` now fails on `screen/` (react-leaflet, leaflet, @vitejs/plugin-react, react-dom/client types), because the root `tsconfig.json` include `**/*.tsx` picks up `screen/` and it has its own tsconfig. Add `"exclude": ["screen", "web", "node_modules"]` to the root `tsconfig.json` (not my file).
 - Human check: on phone A open Demo tools, "Fake loop: small"; cells colour on phone B within a second. Hold the chip 2 s to open the panel. Switch player, then Fake loop again.
+
+## B5 follow-up: checkout_link research + email fallback (HACK-BACKEND, 14:00)
+- Checked again for the `checkout_link` exchange. Whop's public spec (api.whop.com) and sandbox spec (sandbox-api.whop.com) both have no `POST /checkout_sessions` path. Checkout sessions do exist in their schema (`chs_` ids in webhooks). The spec the docs pages cite (`docs.whop.com/openapi/api-v1-native.json`) is behind a Whop login. So the docs cannot settle it; the first live run's log will. Worth asking the Whop team: "How do I get a buyer-openable URL from an issued invoice's `checkout_link`? Is `POST /checkout_sessions { link }` available in sandbox?"
+- Added a fallback in `payments.chargeShopFee`: when no openable URL comes back, it calls `POST /invoices/{id}/send`, which emails the invoice and its pay link to `WHOP_SHOP_EMAIL`. Paying from that inbox with a sandbox test card is picked up by `checkFee` and shown as `charged`. Best effort: a send failure leaves the fee `invoiced`.
+- Demo path either way: redeem, fee shows `invoiced` (with a link if Whop gives one), a teammate pays from the link or the email, and within 15 s it shows `charged`.
+- hackathon.md: logged Capy PR #1 (merged `0b165fb`) and the Revyl/Capy thread `jam_01M7GJQ2EMP958N7KZH3R03BE1`.
+- tsc clean, 34/34 tests pass. Files changed: `convex/payments.ts`, `hackathon.md`.
+
+## F3: Walk screen with real tracking, HUD, auto-close, Close loop, cancel, pause, retry (HACK-FRONTEND, 14:58)
+- `src/app/walk.tsx`: `watchPositionAsync({ accuracy: High, timeInterval: 2000, distanceInterval: 5 })`, drops points under 1 s apart (iOS ignores timeInterval), stores `{lat, lng, t: location.timestamp, acc: accuracy ?? 10}`. Points with acc > 50 are sent but not drawn. Lime 5 px round path, `Flag` pin on the first drawn point, camera follows until dragged, then "Recenter". `useKeepAwake`.
+- HUD: "WALKED" StatNumber + progress bar + "Keep going. A loop needs at least 150 m." (from `minLoopM`), then "Return to the flag to close your loop. 85 m to go." "Weak GPS signal. Stay in the open." pill when the last acc > 25. "No GPS signal yet. Stay in the open." after 8 s with no point.
+- Auto-close: length >= `minLoopM`, has been > 2 x `closeRadiusM` from the flag, now within `closeRadiusM`: success haptic, then submit. "Close loop" primary once long enough.
+- Submit: spinner + "Counting your blocks…"; 10 s timeout or network failure keeps the points and shows "Couldn't reach the server." + "Try again" (a ConvexError shows its own sentence). Success clears the saved walk and opens Result.
+- "Cancel" (top left) asks in-screen "Discard this walk?" with "Discard" / "Keep walking". Background stops recording; on return "Walk paused. Keep Lasso open while you walk." with "Resume" (same path) / "Discard". Points saved to AsyncStorage every 10 points and on pause (`src/lib/savedWalk.ts`).
+- Built ahead for F7: Walk accepts a pending walk to resume or replay (replay draws at 10x and submits with timestamps shifted to now). The Home "Resume your walk?" prompt and the Demo tools "Replay last walk" button come in F7.
+- Checked: root `npx tsc --noEmit` clean (exit 0), iOS export builds at 3.3 MB. Not run on a device.
+- Human check outside: Start walk, walk a ~150 m loop back to the flag; it should auto-submit and show Result. Also try Cancel, backgrounding the app, and airplane mode on close (expect "Couldn't reach the server." and "Try again" working once back online).
