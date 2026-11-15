@@ -1,0 +1,29 @@
+project:
+    id: e79d291e-8947-49bd-a8f3-be48200583cc
+session:
+    idle_timeout_seconds: 1800
+build:
+    framework: expo
+    env:
+        EXPO_PUBLIC_CONVEX_URL: https://fantastic-crocodile-610.convex.cloud
+    profiles:
+        pull-request:
+            ios:
+                app_id: b7ce8eff-14ef-482a-be01-a56eabe54dcb
+                setup_commands:
+                    - npm ci --no-audit --no-fund
+                    - npx expo prebuild --platform ios --clean --no-install
+                build_commands:
+                    - cd ios && pod install && xcodebuild -workspace Lasso.xcworkspace -scheme Lasso -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' ARCHS=arm64 -derivedDataPath build CODE_SIGNING_ALLOWED=NO
+                output_path: ios/build/Build/Products/Release-iphonesimulator/*.app
+pr_review:
+    enabled: true
+    build:
+        kind: revyl
+        profile: pull-request
+    proof_of_changes:
+        enabled: true
+        harness:
+            kind: revyl
+        always_verify:
+            - The app launches to its first screen (the Join screen with a Nickname field, or the map for a returning player).
