@@ -12,7 +12,7 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - Scheduled functions: `rewards.redeem` schedules `payments.chargeShopFee`, which polls Whop with `payments.checkFee`.
 - Points economy (contract v4): every captured walk earns points; `offers.exchange` spends them on shop offers and issues a voucher; every balance change writes one `ledger` row inside the same transaction, so a balance can never drift from its history.
 - The map grid is H3 hexagons (`h3-js`, resolution 11) running inside Convex functions.
-- Tests: `convex-test` + `vitest` (`npx vitest run`): 38 tests over the pure rules and the public API.
+- Tests: `convex-test` + `vitest` (`npx vitest run`): 39 tests over the pure rules and the public API.
 
 ### Whop (payments)
 - The shop pays a small fee each time a reward is redeemed. `convex/payments.ts` creates and issues a Whop invoice in the sandbox and stores its hosted payment link.
@@ -41,3 +41,4 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - 13:59: first live Whop run: invoice `pay_VMhcQG436HwYZF` created; issuing waits on Whop account verification of the sandbox business.
 - 14:40-14:54: Revyl smoke tests on a cloud iPhone 16 (iOS 27): capture 8/8, steal 9/9 (session marked failed), reward 12/12.
 - 15:28: backend B8. Points from walks, an exchange of points for shop offers, vouchers, wallet, stats and a points leaderboard; deployed with tests (38/38) and 8 offers seeded on the 4 partner shops.
+- 15:32: backend B9. `admin.demoSeed` fills the demo map with 3 players (Sam, Maya, Leo) holding 3 partner shops, every block captured through the same `captureWalk` path as `walks.submit`; tests 39/39.

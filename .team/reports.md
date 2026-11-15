@@ -131,3 +131,31 @@
 - Tests: new `convex/points.test.ts` (4 tests: points formula; walk points + ledger + rejected 0; exchange not enough then enough, voucher too_far / ok / already_used, points leaderboard, reset; steals in stats). `npx tsc -p convex --noEmit` clean, `npx vitest run` 38/38.
 - Live: re-ran `admin:seedShops` with assets/seed-shops.json, so there are now 8 offers (a free item for 300 and "10% off your order" for 100 at each of the 4 shops).
 - Files to commit: convex/schema.ts, convex/lib/config.ts, convex/lib/rules.ts, convex/lib/ledger.ts, convex/walks.ts, convex/admin.ts, convex/leaderboard.ts, convex/offers.ts, convex/vouchers.ts, convex/wallet.ts, convex/stats.ts, convex/points.test.ts, convex/_generated/api.d.ts, hackathon.md.
+
+## F10: Menu panel and every menu screen, Result points line, chip balance (HACK-FRONTEND, 15:33)
+- **LEAD, Revyl yaml needs an update:** the top-right "Demo tools" button moved into the Menu panel (as v4 asks), so every step that says "Tap 'Demo tools'" from Home must now read "Tap 'Menu', then tap 'Demo tools'": lasso-capture.yaml line 15, lasso-reward.yaml lines 13 and 23, lasso-steal.yaml lines 13, 15 and 23. Holding the player chip for 2 s still opens Demo tools directly. "Shops" on the Home card, "Fake loop: small", "Back to map", "Add test player", "Switch player" and "End the week" are unchanged.
+- **LEAD, package.json:** the Invite QR uses `toqr` (tiny pure-JS QR encoder, no native code). It's already in node_modules as a dependency of `@expo/cli` but not declared. Please `npm i toqr@0.1.1` so a clean install keeps it. No new build is needed for the Revyl device.
+- Home: "Menu" button (lucide Menu icon + the word "Menu") top right, always shown. The chip shows "12 blocks · 340 pts" from `wallet.mine`.
+- `MenuPanel` slides in from the right over the scrim with Home (closes), Wallet, Exchange, Rewards, Shops, Ranking, Analytics, Invite, About, Demo tools. Navigation waits for the panel to dismiss (iOS drops a modal presented while another is closing).
+- Wallet: balance as a `hero` StatNumber, vouchers (`VoucherCard`: code in hero, shop, "Use" with the same radius/Demo redeem rule, "Used." in green, too_far / already_used sentences), history (+12 green, -300 red, time ago), "Exchange points" primary at the bottom.
+- Exchange: `offers.list` grouped by shop with distance, each offer a Card with title, shop, "300 pts" in lime, "Exchange" (disabled + "You need 120 more points" when short). Success: toast "Voucher added to your wallet" and opens Wallet.
+- Rewards: "YOUR REWARDS" (the season prizes, same `RewardCard` as Shops, now in `src/components/RewardCard.tsx`) plus unused vouchers.
+- Ranking: "Blocks" / "Points" tabs (`leaderboard.top` / `leaderboard.points`), my row highlighted with a lime border and "(you)".
+- Analytics: points, blocks held, walks, distance tiles; 7-day bar chart of metres walked (react-native-svg, from `recent`, today in lime); steals made / suffered; last walks list.
+- Invite: "Invite your neighbours", QR of the website link, "Open website", "Share invite" primary (RN Share).
+- About: five rule lines, "Built at the YC Consumer Mobile Hackathon with Convex, Capy, Revyl and Whop", "Open website", the link and the version.
+- Demo tools: new "Points" section with "Add 500 points" (`admin.grantPoints`, toast with the new balance).
+- Result: "+N points" in lime under the block count when `pointsEarned` > 0.
+- Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.4 MB). Nothing cut: chart and QR are both in. Not run on a device.
+- Human check: Menu opens from the right; each row opens its screen; Demo tools > "Add 500 points", then Exchange an offer, then Wallet shows the voucher; Use it with Demo redeem on shows "Used.".
+
+## HACK-BACKEND: B9: admin.demoSeed (done, NOT run live)
+- `admin.demoSeed` (mutation, no args) returns `{ players, cells }`: `players` = demo players created by this call, `cells` = cells on the map afterwards.
+- Reuses the real capture: I moved the body of `walks.submit` into `convex/lib/capture.ts` `captureWalk(ctx, player, points, now)`. `walks.submit` now just loads the player and calls it, so behaviour is unchanged and all old tests pass. demoSeed calls the same function with a `squareLoop` around each shop. It never writes cells by hand.
+- Seeds the venue shops from `assets/seed-shops.json` if missing (by name; offers created too). Needed `"resolveJsonModule": true` in `convex/tsconfig.json`. seedShops now shares the same `upsertShops` helper.
+- Players: Sam `demo#Sam` #FF4D5E "first to the boba" (Happy Cow, 130 m), Maya `demo#Maya` #9B5CFF "my block now" (Neighbor Bakehouse, 150 m), Leo `demo#Leo` #FF8A3D "run faster" (Piccino, 130 m). Colours are from playerColors, skipping #3D7BFF (first in the picker). Each gets +400 "Demo points" on top of the walk's own points.
+- Idempotent: an existing demo player (by deviceId) is skipped; a second run returns `{ players: 0, cells: <same> }`.
+- Result on a fresh DB (from the test): 24 cells. Sam holds Happy Cow at strength 7 (needs 8 to steal, so a 200 m loop takes it live; the test checks that). Maya holds Neighbor Bakehouse at strength 11, and Leo holds Piccino at strength 7. Humphry is free. Points: Maya 569, Sam 521, Leo 521.
+- Note: Happy Cow and Neighbor Bakehouse are about 118 m apart, so Maya's 150 m loop overlaps Sam's by one block. Maya steals 1 block from Sam and one steal event appears in the feed (Sam keeps 6 blocks and the shop). This is the real rules at work; say if you would rather have no event and I will swap the order (Sam would then be blocked on that block instead).
+- Tests: new `convex/demo.test.ts` (holders, offers, 400 points, flag on blocks, idempotent, live 200 m steal of Happy Cow). tsc is clean and vitest passes 39/39.
+- Files to commit: convex/lib/capture.ts (new), convex/walks.ts, convex/admin.ts, convex/tsconfig.json, convex/demo.test.ts (new), hackathon.md.
