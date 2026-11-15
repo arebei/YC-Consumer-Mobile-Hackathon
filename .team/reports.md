@@ -35,3 +35,13 @@
 - Components added: `PlayerDot`, `Skeleton` (shimmer, off with Reduce Motion), `FlagText`, `FlagField`, `LassoMap`.
 - Checked: `npx tsc --noEmit` clean, `npx expo export --platform ios` builds. Not run on a device yet.
 - Human check on a phone: Join with a nickname, allow location, see the blue dot on the dark map on two phones; deny location on one and check the venue pill (demo mode) or the settings card.
+
+## B5 code done, live check blocked on WHOP_SHOP_EMAIL (HACK-BACKEND, 13:50); B6 + B7 done
+- `convex/payments.ts`: `chargeShopFee` (internal action) runs create invoice, then issue, then saves `feeStatus: "invoiced"` + `whopInvoiceId`, then schedules `checkFee` every 15 s, up to 40 times, which sets `"charged"` when Whop says `paid`. Any non-2xx or throw gives `feeStatus: "failed"` + `feeError` (status + first 300 chars) + `console.error`, and it never throws. Idempotency keys are `lasso-invoice-<rewardId>` and `lasso-issue-<rewardId>`. It pins the `Api-Version-Date: 2026-11-14-1` header. The base URL defaults to sandbox and only `WHOP_API_BASE` overrides it; `WHOP_ENVIRONMENT` is ignored on purpose.
+- Docs checked (docs.whop.com plus the public OpenAPI spec): `initial_price` is in dollars ("5.00 means $5.00"), so `feeCents / 100`. An inline variant needs no product.
+- **Spec gap:** the issued invoice's `checkout_link` is a signed token, not an openable URL. The docs say "pass it as `link` to `POST /checkout_sessions`", but that endpoint is not in the public spec. The code tries it best effort and stores `purchase_url`/`url` as `feeUrl` if it works. If not, the fee is still `invoiced` with `feeUrl: null`. FRONTEND must handle `invoiced` + `feeUrl === null` (e.g. "Invoice sent to Blue Door"). The function logs show which case happened on the first live run.
+- Env on the deployment: `WHOP_API_KEY`, `WHOP_ACCOUNT_ID` set. **`WHOP_SHOP_EMAIL` missing.** Until it is set, every redeem stays `pending` (the spec's accepted fallback, "Blue Door owes $1.00"). The owner sets it with `npx convex env set WHOP_SHOP_EMAIL <inbox>`.
+- Ops helper: `npx convex run payments:retry '{"rewardId":"<id>"}'` re-sends a fee stuck in `pending` or `failed` (fresh idempotency keys).
+- Verified: tsc clean (declared `process.env` locally, since @types/node is not installed); 34/34 tests pass (T6, T7 cover redeem; the scheduled action no-ops in tests with no env).
+- B6 (`admin.reset`: T9; `grid.around`: manual call in B1) and B7 (`leaderboard.top`: in api.test.ts; `walks.preview`: manual call in B1) were done earlier and are verified.
+- Not done yet: one live redeem showing `invoiced` + link (needs `WHOP_SHOP_EMAIL`). After that I stay available for tuning and hackathon.md.
