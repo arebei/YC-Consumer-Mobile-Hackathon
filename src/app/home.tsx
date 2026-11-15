@@ -46,6 +46,9 @@ export default function Home() {
   const rewards = useQuery(api.rewards.mine, playerId ? { playerId } : 'skip');
   const reconnecting = useReconnecting();
   const { position, usingVenue, permission } = useCurrentPosition(config?.center, config?.demoMode);
+  // Faint grid of nearby blocks. Round to about 100 m so it does not re-query on every GPS tick.
+  const gridAt = position ? { lat: Math.round(position.lat * 1000) / 1000, lng: Math.round(position.lng * 1000) / 1000 } : null;
+  const grid = useQuery(api.grid.around, gridAt ?? 'skip');
 
   const [follow, setFollow] = useState(true);
   const [flagSheet, setFlagSheet] = useState(false);
@@ -174,7 +177,8 @@ export default function Home() {
           follow={follow}
           onUserDrag={() => setFollow(false)}
           onCellPress={setSelectedCell}
-          onMapPress={() => setSelectedCell(null)}>
+          onMapPress={() => setSelectedCell(null)}
+          grid={grid}>
           {shops?.map((s) => (
             <ShopPin key={s.shopId} lat={s.lat} lng={s.lng} name={s.name} mine={s.holderId === player.playerId} />
           ))}

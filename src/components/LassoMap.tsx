@@ -5,6 +5,7 @@ import MapView, { Polygon, type MapPressEvent } from 'react-native-maps';
 import type { Id } from '../../convex/_generated/dataModel';
 import type { LatLng } from '../../convex/lib/loop';
 import { darkMapStyle, withAlpha } from '../lib/colors';
+import { color } from '../theme';
 
 export type MapCell = {
   cellId: string;

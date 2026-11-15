@@ -10,14 +10,14 @@ import { Marker, Polyline } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { api } from '../../convex/_generated/api';
-import { haversineM, pathLengthM, type Point } from '../../convex/lib/loop';
+import { haversineM, pathLengthM, type LatLng, type Point } from '../../convex/lib/loop';
 import { Button } from '../components/Button';
 import { GlassCard } from '../components/GlassCard';
 import { Flag } from '../components/icons';
 import { LassoMap } from '../components/LassoMap';
 import { Pill } from '../components/Pill';
 import { StatNumber } from '../components/StatNumber';
-import { errorMessage, formatDistance } from '../lib/format';
+import { blocks, errorMessage, formatDistance } from '../lib/format';
 import { usePlayer } from '../lib/player';
 import { clearWalk, saveWalk, takePendingWalk } from '../lib/savedWalk';
 import { lastResult } from '../lib/store';
@@ -30,6 +30,7 @@ const DRAW_MAX_ACC = 50; // metres; worse points are sent but not drawn
 const WEAK_ACC = 25;
 const SUBMIT_TIMEOUT_MS = 10000;
 const SAVE_EVERY = 10;
+const PREVIEW_EVERY = 10;
 const REPLAY_SPEED = 10;
 const REPLAY_MAX_GAP_MS = 1500;
 const NO_FIX_HINT_MS = 8000;
@@ -103,6 +104,17 @@ export default function Walk() {
   const longEnough = minLoop !== undefined && lengthM >= minLoop;
   const last = points[points.length - 1];
   const weak = !!last && last.acc > WEAK_ACC;
+
+  // Live "Closing now takes 7 blocks": re-query at most once every ten new drawn points.
+  const [previewPts, setPreviewPts] = useState<LatLng[] | null>(null);
+  const previewLen = useRef(0);
+  useEffect(() => {
+    if (!longEnough || replay) return;
+    if (previewPts !== null && drawn.length - previewLen.current < PREVIEW_EVERY) return;
+    previewLen.current = drawn.length;
+    setPreviewPts(drawn.map((p) => ({ lat: p.lat, lng: p.lng })));
+  }, [drawn.length, longEnough]); // eslint-disable-line react-hooks/exhaustive-deps
+  const preview = useQuery(api.walks.preview, previewPts && longEnough ? { points: previewPts } : 'skip');
 
   // --- submit -----------------------------------------------------------
   const submit = async (pts: Point[] = pointsRef.current) => {
@@ -298,6 +310,9 @@ export default function Walk() {
         <Text style={[type.body, styles.text]}>
           {`Return to the flag to close your loop. ${formatDistance(toStart)} to go.`}
         </Text>
+        {preview && preview.cells > 0 && (
+          <Text style={[type.bodyStrong, styles.accent]}>{`Closing now takes ${blocks(preview.cells)}`}</Text>
+        )}
       </>
     );
   }
@@ -395,4 +410,5 @@ const styles = StyleSheet.create({
   text: { color: color.text },
   muted: { color: color.textMuted },
   danger: { color: color.danger },
+  accent: { color: color.accent },
 });

@@ -99,3 +99,21 @@
 - **LEAD (app.json, not my file):** the splash `backgroundColor` is still the template blue `#208AEF` and the Android adaptive icon background is `#E6F4FE`. For the Night map look, set both to `#07070A` (`color.bg`).
 - Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not checked on a device (Revyl loop not up).
 - Human check: open each screen on a phone and look for clipped text on the target card and banner (3 lines max) and the flag chip.
+
+## F9: stretch - Top walkers, faint grid, walk preview (HACK-FRONTEND, 14:00)
+- Shops screen: "TOP WALKERS" card from `leaderboard.top` (rank, PlayerDot, name, "N blocks"), hidden when empty.
+- Home: faint outlines of unclaimed blocks from `grid.around` (1 px `border` colour, no fill, not tappable, drawn under owned cells). The query position is rounded to about 100 m, so it does not re-query on every GPS tick.
+- Walk HUD: after the loop is long enough, "Closing now takes 7 blocks" in lime from `walks.preview`, re-queried at most once every ten new drawn points; hidden until the first answer and when 0.
+- Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not run on a device.
+- Human check: the Home map shows a faint hex grid around you; outdoors the walk HUD shows the "Closing now takes" line after about 150 m.
+- All milestones F0 to F9 are delivered. I'm waiting for bug reports from the phone tests and Revyl.
+
+## B5 live run (HACK-BACKEND, 14:05): invoice created, issue blocked by Whop account verification
+- Steps on fantastic-crocodile-610: `admin:seedShops` with `assets/seed-shops.json` (4 shops); joined test player "Backend Test" (deviceId `backend-live-test`); walked a 200 m square around Happy Cow Creamery & Tea (captured, strength 19, it became the holder); `season:end` gave 1 reward (code MK6FRN); `rewards:redeem` with `demo: true` returned `{ ok: true }`.
+- Run 1: `failed`. Whop's 400: "Title is too long (maximum is 30 characters)". Fixed: the variant title is now "Lasso redemption fee" and the shop name goes in the item `description`.
+- Run 2 (`payments:retry`): **invoice created, `pay_VMhcQG436HwYZF`**, status draft, total `{"amount":"1.00","currency":"usd"}`, so dollar units are confirmed. **Issue refused:** `400 invoice_account_verification_required`, "Complete account verification before issuing an invoice". The status stayed `failed`. Neither feeUrl nor the email fallback was reached (both come after issue).
+- **Owner action needed:** complete account verification for the sandbox business in the Whop sandbox dashboard (sandbox.whop.com), or ask the Whop team on the floor to verify or waive it for the sandbox account. Nothing in our code can get past this.
+- Code change: on an issue failure the invoice id is now saved, and a retry re-issues that same draft instead of creating another.
+- Then `admin:reset` as asked: 0 cells, rewards cleared, 4 shops kept. The player "Backend Test" remains (reset keeps players by design); it shows in the admin Switch player list.
+- To re-run once verification is done (about 1 minute): same steps (join, a 200 m loop around a shop, `season:end`, redeem with demo). Note for anyone scripting it: `npx convex run` with a long walk JSON fails on Windows ("The command line is too long"); use `node node_modules/convex/bin/main.js run ...` instead.
+- hackathon.md logs the invoice id and the verification block (no email address in it). tsc clean, 34/34 tests pass. Changed: `convex/payments.ts`, `hackathon.md`.
