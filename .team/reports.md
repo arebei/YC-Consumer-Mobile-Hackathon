@@ -19,3 +19,10 @@
 - Removed template `src/app/explore.tsx`, `src/components/app-tabs.tsx`, `app-tabs.web.tsx`. Other template components are untouched and unused.
 - Checked: `npx tsc --noEmit` clean; `npx expo export --platform ios` builds (2.9 MB bundle, output in my scratchpad, nothing written to the repo).
 - Not checked on a device (no Revyl loop yet). Human check: none needed for F0.
+
+## B2 + B3 + B4 + B6 (HACK-BACKEND, 13:36): capture, steal, flags, shops, season, rewards, reset all tested
+- No new functions were needed (all written in B0). This milestone is verification.
+- New test file `convex/api.test.ts` (5 tests) drives everything through the public `api`. I made it a separate file, not an extension of `game.test.ts`, to leave the kit file untouched. It covers T1, T2, T3, T8 (plus `walks.last` skipping rejected walks and `leaderboard.top`), T11 (`byFlag` frozen, `ownerFlag` live), T4 + T10 (shop minimum note; `seedShops` twice keeps count 1, updates by name, skips a second shop in the same block), T5 (fake timers: A holds 1 h, B takes it, `shops.list` shows B as holder and A first in `top` with about 1 h; `season.end` gives one reward to A, a second call gives 0; `rewards.mine` shape), T6, T7 (too_far, demo ok with `feeStatus: "pending"`, then already_redeemed) and T9 (`admin.reset` clears cells/events/rewards, keeps players and shops; a new season can end again).
+- `npx vitest run`: 34/34 pass. `npx tsc -p convex --noEmit` clean.
+- Untested: the live Whop call (B5, next). `grid.around` was checked by hand on the deployment in B1.
+- Created `hackathon.md` at the repo root with the sponsor uses LEAD sent (Convex deployment, Whop env vars, Capy thread). If the Convex hackathon skill PR later creates its own `hackathon.md`, keep this content.
