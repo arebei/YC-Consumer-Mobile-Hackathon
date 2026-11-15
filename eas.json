@@ -1,0 +1,13 @@
+{
+  "cli": { "version": ">= 16.0.0", "appVersionSource": "remote" },
+  "build": {
+    "revyl-sim": {
+      "ios": { "simulator": true },
+      "env": { "EXPO_PUBLIC_CONVEX_URL": "https://fantastic-crocodile-610.convex.cloud" }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": { "EXPO_PUBLIC_CONVEX_URL": "https://fantastic-crocodile-610.convex.cloud" }
+    }
+  }
+}
