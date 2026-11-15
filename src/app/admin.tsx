@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from 'convex/react';
 import { useRouter } from 'expo-router';
-import { X } from '../components/icons';
+
 import { useState, type ReactNode } from 'react';
 import {
   KeyboardAvoidingView,
@@ -21,6 +21,7 @@ import type { Id } from '../../convex/_generated/dataModel';
 import { squareLoop, type LatLng } from '../../convex/lib/loop';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { CloseButton } from '../components/CloseButton';
 import { FlagField } from '../components/FlagField';
 import { PlayerDot } from '../components/PlayerDot';
 import { Skeleton } from '../components/Skeleton';
@@ -164,9 +165,7 @@ export default function Admin() {
     <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={[styles.header, { paddingTop: insets.top + space.md }]}>
         <Text style={[type.title1, styles.text]}>Demo tools</Text>
-        <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={() => router.back()} hitSlop={space.md}>
-          <X size={size.icon} strokeWidth={size.iconStroke} color={color.text} />
-        </Pressable>
+        <CloseButton onPress={() => router.back()} />
       </View>
 
       <ScrollView

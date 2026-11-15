@@ -10,11 +10,12 @@ import { api } from '../../convex/_generated/api';
 import { haversineM } from '../../convex/lib/loop';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { CloseButton } from '../components/CloseButton';
 import { EmptyState } from '../components/EmptyState';
-import { Store, Trophy, X } from '../components/icons';
+import { Store, Trophy } from '../components/icons';
 import { PlayerDot } from '../components/PlayerDot';
 import { Skeleton } from '../components/Skeleton';
-import { errorMessage, formatFee, formatHeld } from '../lib/format';
+import { blocks, errorMessage, formatFee, formatHeld } from '../lib/format';
 import { useReduceMotion } from '../lib/motion';
 import { usePlayer } from '../lib/player';
 import { useCurrentPosition } from '../lib/position';
@@ -179,6 +180,7 @@ export default function Shops() {
   const { player } = usePlayer();
   const config = useQuery(api.config.public);
   const shops = useQuery(api.shops.list);
+  const top = useQuery(api.leaderboard.top);
   const rewards = useQuery(api.rewards.mine, player ? { playerId: player.playerId } : 'skip');
   const { position } = useCurrentPosition(config?.center, config?.demoMode);
   const [now, setNow] = useState(() => Date.now());
@@ -192,9 +194,7 @@ export default function Shops() {
     <View style={styles.fill}>
       <View style={[styles.header, { paddingTop: insets.top + space.md }]}>
         <Text style={[type.title1, styles.text]}>Shops</Text>
-        <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={() => router.back()} hitSlop={space.md}>
-          <X size={size.icon} strokeWidth={size.iconStroke} color={color.text} />
-        </Pressable>
+        <CloseButton onPress={() => router.back()} />
       </View>
 
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + space.xxl }]}>
@@ -230,6 +230,24 @@ export default function Shops() {
         ) : (
           shops.map((s) => <ShopCard key={s.shopId} shop={s} now={now} />)
         )}
+
+        {top && top.length > 0 && (
+          <>
+            <Text style={[type.overline, styles.muted, styles.sectionGap]}>Top walkers</Text>
+            <Card style={styles.cardGap}>
+              {top.map((t, i) => (
+                <View key={t.playerId} style={styles.row}>
+                  <Text style={[type.callout, styles.muted, styles.tabular, styles.rank]}>{i + 1}</Text>
+                  <PlayerDot playerColor={t.color} />
+                  <Text style={[type.callout, styles.text, styles.grow]} numberOfLines={1}>
+                    {t.name}
+                  </Text>
+                  <Text style={[type.callout, styles.text, styles.tabular]}>{blocks(t.blocks)}</Text>
+                </View>
+              ))}
+            </Card>
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -249,6 +267,7 @@ const styles = StyleSheet.create({
   cardGap: { gap: space.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   grow: { flex: 1 },
+  rank: { minWidth: space.lg },
   code: { color: color.text, letterSpacing: CODE_SPACING, fontVariant: ['tabular-nums'] },
   text: { color: color.text },
   muted: { color: color.textMuted },

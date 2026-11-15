@@ -22,6 +22,7 @@ import { blocks, formatDistance, formatHeld } from '../lib/format';
 import { useReduceMotion } from '../lib/motion';
 import { usePlayer } from '../lib/player';
 import { useCurrentPosition } from '../lib/position';
+import { clearWalk, loadWalk, setPendingWalk, type SavedWalk } from '../lib/savedWalk';
 import { stealParts, useStealBanner } from '../lib/stealBanner';
 import { color, radius, size, space, type } from '../theme';
 
@@ -45,6 +46,9 @@ export default function Home() {
   const rewards = useQuery(api.rewards.mine, playerId ? { playerId } : 'skip');
   const reconnecting = useReconnecting();
   const { position, usingVenue, permission } = useCurrentPosition(config?.center, config?.demoMode);
+  // Faint grid of nearby blocks. Round to about 100 m so it does not re-query on every GPS tick.
+  const gridAt = position ? { lat: Math.round(position.lat * 1000) / 1000, lng: Math.round(position.lng * 1000) / 1000 } : null;
+  const grid = useQuery(api.grid.around, gridAt ?? 'skip');
 
   const [follow, setFollow] = useState(true);
   const [flagSheet, setFlagSheet] = useState(false);
@@ -52,6 +56,17 @@ export default function Home() {
   const [now, setNow] = useState(() => Date.now());
   const { event: steal, dismiss: dismissSteal } = useStealBanner(playerId, events);
   const pulse = useRef(new Animated.Value(0)).current;
+  const [saved, setSaved] = useState<SavedWalk | null>(null);
+
+  // A walk interrupted by a restart (saved under 30 minutes ago) is offered for resume.
+  useEffect(() => {
+    if (!playerId) return;
+    let alive = true;
+    loadWalk().then((w) => alive && setSaved(w && w.playerId === playerId ? w : null));
+    return () => {
+      alive = false;
+    };
+  }, [playerId]);
 
   // Keep the stored player in step with the server (name, colour, flag), or send them to Join if gone.
   useEffect(() => {
@@ -162,7 +177,8 @@ export default function Home() {
           follow={follow}
           onUserDrag={() => setFollow(false)}
           onCellPress={setSelectedCell}
-          onMapPress={() => setSelectedCell(null)}>
+          onMapPress={() => setSelectedCell(null)}
+          grid={grid}>
           {shops?.map((s) => (
             <ShopPin key={s.shopId} lat={s.lat} lng={s.lng} name={s.name} mine={s.holderId === player.playerId} />
           ))}
@@ -237,6 +253,33 @@ export default function Home() {
           <Button label="Recenter" variant="secondary" size="medium" onPress={() => setFollow(true)} style={styles.recenter} />
         )}
 
+        {saved && (
+          <GlassCard style={styles.card}>
+            <Text style={[type.bodyStrong, styles.text]}>Resume your walk?</Text>
+            <View style={styles.buttonRow}>
+              <Button
+                label="Resume"
+                size="medium"
+                variant="secondary"
+                onPress={() => {
+                  setPendingWalk({ mode: 'resume', points: saved.points });
+                  setSaved(null);
+                  router.push('/walk');
+                }}
+              />
+              <Button
+                label="Discard"
+                size="medium"
+                variant="ghost"
+                onPress={() => {
+                  clearWalk();
+                  setSaved(null);
+                }}
+              />
+            </View>
+          </GlassCard>
+        )}
+
         {cell && (
           <GlassCard style={styles.card}>
             <Text style={[type.body, styles.text]}>
@@ -283,11 +326,12 @@ const styles = StyleSheet.create({
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: space.sm },
   topLeft: { gap: space.sm, alignItems: 'flex-start', flexShrink: 1 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm },
-  flagChip: { paddingVertical: space.sm, maxWidth: 240 },
+  flagChip: { paddingVertical: space.sm, maxWidth: size.chipMax },
   bottom: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: space.lg, gap: space.md },
   recenter: { alignSelf: 'flex-end' },
   card: { gap: space.sm },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  buttonRow: { flexDirection: 'row', gap: space.sm },
   dot: {
     position: 'absolute',
     top: -space.xxs,

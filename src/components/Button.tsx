@@ -11,6 +11,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import { useReduceMotion } from '../lib/motion';
 import { color, motion, opacity, radius, size, space, type } from '../theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -44,10 +45,12 @@ export function Button({
   style,
 }: Props) {
   const scale = useRef(new Animated.Value(1)).current;
+  const reduceMotion = useReduceMotion();
   const v = variants[variant];
   const inactive = disabled || loading;
 
   const animateTo = (to: number) =>
+    !reduceMotion &&
     Animated.timing(scale, { toValue: to, duration: motion.press, useNativeDriver: true }).start();
 
   return (

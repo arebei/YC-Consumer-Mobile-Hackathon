@@ -1,10 +1,11 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import MapView, { Polygon, type MapPressEvent } from 'react-native-maps';
 
 import type { Id } from '../../convex/_generated/dataModel';
 import type { LatLng } from '../../convex/lib/loop';
 import { darkMapStyle, withAlpha } from '../lib/colors';
+import { color } from '../theme';
 
 export type MapCell = {
   cellId: string;
@@ -26,6 +27,8 @@ type Props = {
   fillOverride?: Record<string, number>;
   /** Fit the camera to these cells once they are on the map (Result screen). */
   fitCellIds?: string[];
+  /** Faint outlines of nearby blocks (claimed ones are skipped). */
+  grid?: { cellId: string; boundary: LatLng[] }[];
   children?: ReactNode;
 };
 
@@ -35,6 +38,7 @@ const FILL_OTHER = 0.45;
 const FILL_MINE = 0.65;
 const STROKE_OTHER = 1.5;
 const STROKE_MINE = 2.5;
+const GRID_STROKE = 1;
 
 const toCoord = (p: LatLng) => ({ latitude: p.lat, longitude: p.lng });
 
@@ -48,8 +52,10 @@ export function LassoMap({
   onMapPress,
   fillOverride,
   fitCellIds,
+  grid,
   children,
 }: Props) {
+  const claimed = useMemo(() => new Set(cells?.map((c) => c.cellId)), [cells]);
   const ref = useRef<MapView>(null);
   const cellPressedAt = useRef(0);
   const fitted = useRef(false);
@@ -91,6 +97,17 @@ export function LassoMap({
       rotateEnabled={false}
       onPanDrag={onUserDrag}
       onPress={handleMapPress}>
+      {grid
+        ?.filter((g) => !claimed.has(g.cellId))
+        .map((g) => (
+          <Polygon
+            key={`grid-${g.cellId}`}
+            coordinates={g.boundary.map(toCoord)}
+            fillColor="transparent"
+            strokeColor={color.border}
+            strokeWidth={GRID_STROKE}
+          />
+        ))}
       {cells?.map((c) => {
         const mine = c.ownerId === myId;
         const fill = fillOverride?.[c.cellId] ?? (mine ? FILL_MINE : FILL_OTHER);

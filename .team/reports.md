@@ -80,3 +80,40 @@
 - Fixed LEAD's note: `FlagSheet` no longer uses `StyleSheet.absoluteFillObject`.
 - Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not run on a device.
 - Human check: phone B takes blocks from phone A, so A sees the banner and a heavy buzz; B's flag shows in A's banner and when tapping B's blocks. End the week, then the winner's Shops screen shows the code; Redeem with Demo redeem on shows "Redeemed." and a fee line.
+
+## F7: Replay, capture animation, Reset map, saved-walk resume (HACK-FRONTEND, 13:55 by the machine clock)
+- Correction: the times in my F1 to F6 headings (14:12, 14:40, 14:58, 15:24) were wrong; I wrote them without reading the clock. This one is the real time.
+- Demo tools "Replay last walk": loads `walks.last` for the active player and opens Walk drawing the path at 10x, then submits the same points with timestamps shifted so the last is now (as the active player). No captured walk: error toast "<name> has no captured walk to replay yet."
+- Capture animation on Result (`src/lib/captureAnimation.ts`): claimed cells fade 0 to 65% fill 60 ms apart (stagger shrinks for big loops so the total stays near 800 ms), then the BLOCKS CLAIMED number counts up from 0; medium haptic at the start. Reduce Motion shows the end state.
+- Walk: on loop close (auto or "Close loop") the path flashes wider for 300 ms with the success haptic.
+- Home "Resume your walk?" with "Resume" / "Discard" when a walk for this player was saved under 30 minutes ago (saved every 10 points and on pause; cleared on submit or discard).
+- "Reset map" with its in-panel confirm was already in F2.
+- Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not run on a device.
+- Human check: walk a real loop, then Demo tools > "Replay last walk" indoors runs start to finish and shows Result. Kill the app mid-walk (after 10+ points) and reopen: "Resume your walk?" appears.
+
+## F8: polish pass against section 5 (HACK-FRONTEND, 13:57)
+- Every button now has visible words: the Demo tools and Shops header close buttons were icon-only; they are now `CloseButton` (X icon + "Close").
+- Scan of `src/app` and `src/components`: no hex codes, rgba or font sizes outside `theme.ts` (the flag chip's 240 px max width became `size.chipMax`).
+- Reduce Motion now covers every animation: Skeleton shimmer, banner slide, red edge pulse, capture fade and count-up, reward card, and the button press scale.
+- Removed the unused Expo template files (animated-icon, external-link, hint-row, themed-text/view, web-badge, ui/collapsible, `src/constants/theme.ts`, `src/hooks/*`, `src/global.css`); nothing imported them. `src/` is now only Lasso code.
+- **LEAD (app.json, not my file):** the splash `backgroundColor` is still the template blue `#208AEF` and the Android adaptive icon background is `#E6F4FE`. For the Night map look, set both to `#07070A` (`color.bg`).
+- Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not checked on a device (Revyl loop not up).
+- Human check: open each screen on a phone and look for clipped text on the target card and banner (3 lines max) and the flag chip.
+
+## F9: stretch - Top walkers, faint grid, walk preview (HACK-FRONTEND, 14:00)
+- Shops screen: "TOP WALKERS" card from `leaderboard.top` (rank, PlayerDot, name, "N blocks"), hidden when empty.
+- Home: faint outlines of unclaimed blocks from `grid.around` (1 px `border` colour, no fill, not tappable, drawn under owned cells). The query position is rounded to about 100 m, so it does not re-query on every GPS tick.
+- Walk HUD: after the loop is long enough, "Closing now takes 7 blocks" in lime from `walks.preview`, re-queried at most once every ten new drawn points; hidden until the first answer and when 0.
+- Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not run on a device.
+- Human check: the Home map shows a faint hex grid around you; outdoors the walk HUD shows the "Closing now takes" line after about 150 m.
+- All milestones F0 to F9 are delivered. I'm waiting for bug reports from the phone tests and Revyl.
+
+## B5 live run (HACK-BACKEND, 14:05): invoice created, issue blocked by Whop account verification
+- Steps on fantastic-crocodile-610: `admin:seedShops` with `assets/seed-shops.json` (4 shops); joined test player "Backend Test" (deviceId `backend-live-test`); walked a 200 m square around Happy Cow Creamery & Tea (captured, strength 19, it became the holder); `season:end` gave 1 reward (code MK6FRN); `rewards:redeem` with `demo: true` returned `{ ok: true }`.
+- Run 1: `failed`. Whop's 400: "Title is too long (maximum is 30 characters)". Fixed: the variant title is now "Lasso redemption fee" and the shop name goes in the item `description`.
+- Run 2 (`payments:retry`): **invoice created, `pay_VMhcQG436HwYZF`**, status draft, total `{"amount":"1.00","currency":"usd"}`, so dollar units are confirmed. **Issue refused:** `400 invoice_account_verification_required`, "Complete account verification before issuing an invoice". The status stayed `failed`. Neither feeUrl nor the email fallback was reached (both come after issue).
+- **Owner action needed:** complete account verification for the sandbox business in the Whop sandbox dashboard (sandbox.whop.com), or ask the Whop team on the floor to verify or waive it for the sandbox account. Nothing in our code can get past this.
+- Code change: on an issue failure the invoice id is now saved, and a retry re-issues that same draft instead of creating another.
+- Then `admin:reset` as asked: 0 cells, rewards cleared, 4 shops kept. The player "Backend Test" remains (reset keeps players by design); it shows in the admin Switch player list.
+- To re-run once verification is done (about 1 minute): same steps (join, a 200 m loop around a shop, `season:end`, redeem with demo). Note for anyone scripting it: `npx convex run` with a long walk JSON fails on Windows ("The command line is too long"); use `node node_modules/convex/bin/main.js run ...` instead.
+- hackathon.md logs the invoice id and the verification block (no email address in it). tsc clean, 34/34 tests pass. Changed: `convex/payments.ts`, `hackathon.md`.

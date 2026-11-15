@@ -1,7 +1,10 @@
 import { useMutation, useQuery } from 'convex/react';
 import { useRouter } from 'expo-router';
-import { Footprints } from '../components/icons';
 import { useState } from 'react';
+
+import { Footprints } from '../components/icons';
+import { useCaptureAnimation } from '../lib/captureAnimation';
+import { useReduceMotion } from '../lib/motion';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -36,6 +39,14 @@ export default function Result() {
   const { player, setFlag } = usePlayer();
   const [flag, setFlagText] = useState('');
   const [saving, setSaving] = useState(false);
+  const reduceMotion = useReduceMotion();
+  const captured = result?.status === 'captured';
+  const { fills, count } = useCaptureAnimation(
+    captured ? result.claimedCellIds : [],
+    captured ? result.claimed : 0,
+    captured && cells !== undefined,
+    reduceMotion,
+  );
 
   const back = () => router.dismissTo('/home');
 
@@ -84,12 +95,19 @@ export default function Result() {
   return (
     <View style={styles.fill}>
       {center && (
-        <LassoMap cells={cells} myId={player?.playerId} center={center} follow={false} fitCellIds={result.claimedCellIds} />
+        <LassoMap
+          cells={cells}
+          myId={player?.playerId}
+          center={center}
+          follow={false}
+          fitCellIds={result.claimedCellIds}
+          fillOverride={fills}
+        />
       )}
       <View style={[styles.sheet, { paddingBottom: insets.bottom + space.lg }]} pointerEvents="box-none">
         <GlassCard style={styles.card}>
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.cardContent}>
-            <StatNumber value={result.claimed} label="Blocks claimed" valueColor={color.accent} />
+            <StatNumber value={count} label="Blocks claimed" valueColor={color.accent} />
             <Text style={[type.bodyStrong, styles.text]}>{headline}</Text>
             {result.stolen > 0 && (
               <Text style={[type.body, styles.text]}>
