@@ -117,3 +117,9 @@
 - Then `admin:reset` as asked: 0 cells, rewards cleared, 4 shops kept. The player "Backend Test" remains (reset keeps players by design); it shows in the admin Switch player list.
 - To re-run once verification is done (about 1 minute): same steps (join, a 200 m loop around a shop, `season:end`, redeem with demo). Note for anyone scripting it: `npx convex run` with a long walk JSON fails on Windows ("The command line is too long"); use `node node_modules/convex/bin/main.js run ...` instead.
 - hackathon.md logs the invoice id and the verification block (no email address in it). tsc clean, 34/34 tests pass. Changed: `convex/payments.ts`, `hackathon.md`.
+
+## HACK-BACKEND: Revyl logged in hackathon.md
+- Revyl section: Revyl app "Lasso", build `remote-8f24f156` built by Capy on Revyl's runners; the 3 smoke tests on a cloud iPhone 16 (iOS 27) at 14:40-14:54 with report links (capture 8/8 passed, steal 9/9 steps passed but session marked failed, reward 12/12 passed), the shareable capture link, proof of changes (PR #2, `807f693`), and the backup EAS cloud simulator build `6f89b0dc` (Expo project `yc-hackathon`).
+- Capy section: PR #2 merged as `807f693`. Timeline: 14:40-14:54 entry added.
+- Whop entry unchanged (invoice `pay_VMhcQG436HwYZF`, issuing blocked by sandbox account verification). No email address in the file (checked).
+- File to commit: `hackathon.md`.
