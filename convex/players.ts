@@ -8,7 +8,7 @@ export const join = mutation({
     const clean = name.trim();
     if (clean.length < 1 || clean.length > 16) throw new ConvexError("Pick a nickname of 1 to 16 characters.");
     if (!/^#[0-9A-Fa-f]{6}$/.test(color)) throw new ConvexError("Pick one of the colours.");
-    const existing = await ctx.db.query("players").withIndex("by_deviceId", (q: any) => q.eq("deviceId", deviceId)).unique();
+    const existing = await ctx.db.query("players").withIndex("by_deviceId", (q) => q.eq("deviceId", deviceId)).unique();
     // A flag that is not sent leaves the saved one alone. A flag that is sent replaces it (blank removes it).
     const saved: string | null = flag === undefined ? (existing?.flag ?? null) : cleanFlag(flag);
     if (existing) {
@@ -34,5 +34,5 @@ export const setFlag = mutation({
 export const list = query({
   args: {},
   handler: async (ctx) =>
-    (await ctx.db.query("players").collect()).map((p: any) => ({ playerId: p._id, name: p.name, color: p.color, flag: p.flag ?? null })),
+    (await ctx.db.query("players").collect()).map((p) => ({ playerId: p._id, name: p.name, color: p.color, flag: p.flag ?? null })),
 });
