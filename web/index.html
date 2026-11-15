@@ -71,7 +71,7 @@
   }
 
   .btn{appearance:none;border:1px solid transparent;border-radius:999px;min-height:48px;padding:0 22px;font:600 16px/1 var(--body);
-    cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:transform .09s ease,background .15s ease,border-color .15s ease;text-align:center}
+    cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:transform .09s ease,background .15s ease,border-color .15s ease;text-align:center;line-height:1.2;padding-top:8px;padding-bottom:8px}
   .btn:active{transform:scale(.97)}
   .btn.primary{background:var(--accent);color:var(--on-accent)}
   .btn.primary:hover{background:#D4FF66}
@@ -157,18 +157,29 @@
   .facts b{display:block;font:700 22px/1.15 var(--display);color:var(--reward);margin-bottom:6px}
 
   /* Get the app */
-  .getapp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:clamp(20px,4vw,56px);align-items:center}
+  .getapp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:clamp(20px,4vw,56px);align-items:center}
   @media (max-width:900px){.getapp{grid-template-columns:minmax(0,1fr)}}
-  .howto{display:flex;flex-direction:column;gap:18px;counter-reset:f}
-  .howto li{display:flex;gap:14px;align-items:flex-start}
-  .howto li::before{counter-increment:f;content:counter(f);flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:700 15px/1 var(--display);background:var(--accent);color:var(--on-accent)}
-  .howto li > div{display:flex;flex-direction:column;gap:10px;padding-top:5px}
-  .stores{display:flex;flex-wrap:wrap;gap:8px}
-  .qrcard{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
-  .qr{width:min(100%,260px);aspect-ratio:1;background:#fff;border-radius:16px;padding:14px;display:grid;place-items:center;color:#0A0A0A;font-size:14px;line-height:1.4}
+  .ways{display:flex;flex-direction:column;gap:12px}
+  .way{display:flex;gap:16px;align-items:center;padding:18px 20px;border-radius:18px;text-decoration:none;background:rgba(21,21,28,.85);border:1px solid var(--border-strong);transition:border-color .15s ease,transform .09s ease}
+  .way:hover{border-color:#5A5A70}
+  .way:active{transform:scale(.99)}
+  .way .ico{flex:none;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--elevated);color:var(--text)}
+  .way .ico svg{width:24px;height:24px}
+  .way b{display:block;font:600 18px/1.3 var(--body);color:var(--text)}
+  .way small{display:block;font-size:14px;line-height:1.45;color:var(--body-text);margin-top:2px}
+  .way.primary{background:var(--accent);border-color:var(--accent)}
+  .way.primary:hover{background:#D4FF66}
+  .way.primary .ico{background:rgba(10,10,10,.12);color:var(--on-accent)}
+  .way.primary b,.way.primary small{color:var(--on-accent)}
+  .qrcard{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  .qrcard h3{font-size:18px}
+  .native-steps{font-size:14px;line-height:1.5}
+  .native-steps a{color:var(--text);text-underline-offset:3px}
+  .qr{width:min(100%,180px);aspect-ratio:1;background:#fff;border-radius:14px;padding:10px;display:grid;place-items:center;color:#0A0A0A;font-size:14px;line-height:1.4}
   .qr svg{width:100%;height:100%;display:block}
   .applink{font:500 13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);word-break:break-all}
-  .qrcard .btn{width:100%}
+  .textlink{font-size:15px;color:var(--muted);text-underline-offset:4px;align-self:flex-start;padding:10px 0}
+  .textlink:hover{color:var(--text)}
   .soon{font-size:13.5px;color:var(--faint)}
   .soon b{color:var(--body-text);font-weight:600}
 
@@ -234,9 +245,10 @@
         <h1 id="hero-title">Walk a loop. Own the blocks inside it.</h1>
         <p class="lede">Lasso turns the streets around you into a game against the people who live there. Steal blocks with bigger loops, earn points as you walk, and spend them at the shops on your street.</p>
         <div class="row">
-          <a class="btn primary" href="#get">Get the app</a>
-          <a class="btn ghost" href="#how">How it works</a>
+          <a class="btn primary" href="./app/"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5Z"/></svg>Play in your browser</a>
+          <a class="btn ghost" href="https://app.revyl.ai/tests/report?token=2903123c-f791-45a8-9e96-37b03be6db72" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>Watch it run on a cloud iPhone (Revyl)</a>
         </div>
+        <a class="textlink" href="#native">Full native app in Expo Go</a>
       </div>
     </div>
     <div class="hint" aria-hidden="true">Scroll<span></span></div>
@@ -338,21 +350,24 @@
       <div class="copy panel">
         <p class="over"><b>04</b>Get the app</p>
         <h2 id="get-title">Your neighbourhood is still unclaimed.</h2>
-        <p>Lasso runs in Expo Go today, on iPhone and Android.</p>
-        <ol class="howto">
-          <li><div><p>Install Expo Go.</p>
-            <div class="stores">
-              <a class="btn ghost small" href="https://apps.apple.com/app/expo-go/id982107779" rel="noopener">App Store</a>
-              <a class="btn ghost small" href="https://play.google.com/store/apps/details?id=host.exp.exponent" rel="noopener">Google Play</a>
-            </div></div></li>
-          <li><div><p>Scan the QR code with your phone's camera, or tap <b>Open Lasso</b> if you are already on your phone.</p></div></li>
-          <li><div><p>Allow location while the app is open, then walk your first loop.</p></div></li>
-        </ol>
+        <p>Nothing to install. Lasso runs in your browser on any phone or laptop.</p>
+        <div class="ways">
+          <a class="way primary" href="./app/">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5Z"/></svg></span>
+            <span><b>Play in your browser</b><small>Opens the game right here. Allow location while the page is open.</small></span>
+          </a>
+          <a class="way" href="https://app.revyl.ai/tests/report?token=2903123c-f791-45a8-9e96-37b03be6db72" rel="noopener">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
+            <span><b>Watch it run on a cloud iPhone (Revyl)</b><small>A recorded test run of the iOS build on a Revyl cloud device.</small></span>
+          </a>
+        </div>
         <p class="soon"><b>Accounts on the web: coming soon.</b> Sign up and log in happen in the app for now.</p>
       </div>
-      <div class="qrcard panel">
+      <div class="qrcard panel" id="native" aria-labelledby="native-title">
+        <h3 id="native-title">Full native app in Expo Go</h3>
         <div class="qr" id="qr" role="img" aria-label="QR code that opens Lasso in Expo Go">Loading QR code…</div>
-        <a class="btn primary" id="open-app" href="#" rel="noopener">Open Lasso</a>
+        <p class="native-steps">Install Expo Go from the <a href="https://apps.apple.com/app/expo-go/id982107779" rel="noopener">App Store</a> or <a href="https://play.google.com/store/apps/details?id=host.exp.exponent" rel="noopener">Google Play</a>, then scan the code with your camera or tap below.</p>
+        <a class="btn ghost small" id="open-app" href="#" rel="noopener">Open in Expo Go</a>
         <p class="applink" id="app-link-text"></p>
       </div>
     </div>
@@ -384,7 +399,7 @@
         <details><summary>Does it track me in the background?</summary><p>No. Lasso only uses your location while the app is open on your screen. Close it and tracking stops.</p></details>
         <details><summary>How big are blocks?</summary><p>Blocks are hexagons about 50 m across. A square loop of about 130 m a side, a six-minute walk, claims around 7 blocks.</p></details>
         <details><summary>How do shops pay?</summary><p>Per redemption. Each time a voucher is used at the counter, the shop gets a Whop invoice for a small fee with a link to pay it.</p></details>
-        <details><summary>Does it work on Android?</summary><p>Yes. Install Expo Go from Google Play and open Lasso the same way as on iPhone.</p></details>
+        <details><summary>Does it work on Android?</summary><p>Yes. Play in the browser on any Android phone, or install Expo Go from Google Play for the full native app.</p></details>
       </div>
     </div>
   </section>
