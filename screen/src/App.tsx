@@ -73,8 +73,8 @@ export default function App() {
     <div className="screen">
       <MapContainer center={[37.7608, -122.3861]} zoom={17} className="map" attributionControl>
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          attribution="&copy; OpenStreetMap contributors &copy; CARTO"
+          url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+          attribution="&copy; Stadia Maps &copy; OpenMapTiles &copy; OpenStreetMap contributors"
         />
         <FitOnce cells={cells} />
         {cells?.map((c) => {
