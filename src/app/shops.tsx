@@ -10,8 +10,9 @@ import { api } from '../../convex/_generated/api';
 import { haversineM } from '../../convex/lib/loop';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { CloseButton } from '../components/CloseButton';
 import { EmptyState } from '../components/EmptyState';
-import { Store, Trophy, X } from '../components/icons';
+import { Store, Trophy } from '../components/icons';
 import { PlayerDot } from '../components/PlayerDot';
 import { Skeleton } from '../components/Skeleton';
 import { errorMessage, formatFee, formatHeld } from '../lib/format';
@@ -192,9 +193,7 @@ export default function Shops() {
     <View style={styles.fill}>
       <View style={[styles.header, { paddingTop: insets.top + space.md }]}>
         <Text style={[type.title1, styles.text]}>Shops</Text>
-        <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={() => router.back()} hitSlop={space.md}>
-          <X size={size.icon} strokeWidth={size.iconStroke} color={color.text} />
-        </Pressable>
+        <CloseButton onPress={() => router.back()} />
       </View>
 
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + space.xxl }]}>

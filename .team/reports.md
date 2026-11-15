@@ -90,3 +90,12 @@
 - "Reset map" with its in-panel confirm was already in F2.
 - Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not run on a device.
 - Human check: walk a real loop, then Demo tools > "Replay last walk" indoors runs start to finish and shows Result. Kill the app mid-walk (after 10+ points) and reopen: "Resume your walk?" appears.
+
+## F8: polish pass against section 5 (HACK-FRONTEND, 13:57)
+- Every button now has visible words: the Demo tools and Shops header close buttons were icon-only; they are now `CloseButton` (X icon + "Close").
+- Scan of `src/app` and `src/components`: no hex codes, rgba or font sizes outside `theme.ts` (the flag chip's 240 px max width became `size.chipMax`).
+- Reduce Motion now covers every animation: Skeleton shimmer, banner slide, red edge pulse, capture fade and count-up, reward card, and the button press scale.
+- Removed the unused Expo template files (animated-icon, external-link, hint-row, themed-text/view, web-badge, ui/collapsible, `src/constants/theme.ts`, `src/hooks/*`, `src/global.css`); nothing imported them. `src/` is now only Lasso code.
+- **LEAD (app.json, not my file):** the splash `backgroundColor` is still the template blue `#208AEF` and the Android adaptive icon background is `#E6F4FE`. For the Night map look, set both to `#07070A` (`color.bg`).
+- Checked: root `npx tsc --noEmit` exit 0; iOS export builds (3.3 MB). Not checked on a device (Revyl loop not up).
+- Human check: open each screen on a phone and look for clipped text on the target card and banner (3 lines max) and the flag chip.

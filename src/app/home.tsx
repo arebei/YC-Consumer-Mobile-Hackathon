@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: space.sm },
   topLeft: { gap: space.sm, alignItems: 'flex-start', flexShrink: 1 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm },
-  flagChip: { paddingVertical: space.sm, maxWidth: 240 },
+  flagChip: { paddingVertical: space.sm, maxWidth: size.chipMax },
   bottom: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: space.lg, gap: space.md },
   recenter: { alignSelf: 'flex-end' },
   card: { gap: space.sm },
