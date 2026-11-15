@@ -1,7 +1,7 @@
 import { useQuery } from 'convex/react';
 import { Redirect, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { api } from '../../convex/_generated/api';
@@ -16,6 +16,9 @@ import { blocks } from '../lib/format';
 import { usePlayer } from '../lib/player';
 import { useCurrentPosition } from '../lib/position';
 import { color, space, type } from '../theme';
+
+/** Press and hold the player chip this long to open Demo tools. */
+const ADMIN_HOLD_MS = 2000;
 
 export default function Home() {
   const insets = useSafeAreaInsets();
@@ -68,18 +71,26 @@ export default function Home() {
       {/* Top overlay */}
       <View style={[styles.top, { paddingTop: insets.top + space.sm }]} pointerEvents="box-none">
         <View style={styles.topLeft} pointerEvents="box-none">
-          <GlassCard style={styles.chip}>
-            <PlayerDot playerColor={player.color} />
-            <Text style={[type.bodyStrong, styles.text]} numberOfLines={1}>
-              {player.name}
-            </Text>
-            <Text style={[type.callout, styles.muted, styles.tabular]}>
-              {myBlocks === undefined ? '…' : blocks(myBlocks)}
-            </Text>
-          </GlassCard>
+          <Pressable
+            accessibilityLabel={`${player.name}, ${myBlocks === undefined ? '' : blocks(myBlocks)}`}
+            delayLongPress={ADMIN_HOLD_MS}
+            onLongPress={() => router.push('/admin')}>
+            <GlassCard style={styles.chip}>
+              <PlayerDot playerColor={player.color} />
+              <Text style={[type.bodyStrong, styles.text]} numberOfLines={1}>
+                {player.name}
+              </Text>
+              <Text style={[type.callout, styles.muted, styles.tabular]}>
+                {myBlocks === undefined ? '…' : blocks(myBlocks)}
+              </Text>
+            </GlassCard>
+          </Pressable>
           {usingVenue && <Pill label="Using the venue as your location" />}
           {reconnecting && <Pill label="Reconnecting…" variant="danger" />}
         </View>
+        {config?.demoMode && (
+          <Button label="Demo tools" variant="secondary" size="medium" onPress={() => router.push('/admin')} />
+        )}
       </View>
 
       {/* Bottom overlay */}
@@ -111,7 +122,17 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   fill: { flex: 1, backgroundColor: color.bg },
-  top: { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: space.lg, flexDirection: 'row' },
+  top: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: space.lg,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: space.sm,
+  },
   topLeft: { gap: space.sm, alignItems: 'flex-start', flexShrink: 1 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm },
   bottom: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: space.lg, gap: space.md },

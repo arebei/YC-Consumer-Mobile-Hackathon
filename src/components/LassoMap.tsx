@@ -24,6 +24,8 @@ type Props = {
   onMapPress?: () => void;
   /** Per-cell fill override (0..1), used by the capture animation. */
   fillOverride?: Record<string, number>;
+  /** Fit the camera to these cells once they are on the map (Result screen). */
+  fitCellIds?: string[];
   children?: ReactNode;
 };
 
@@ -45,15 +47,28 @@ export function LassoMap({
   onCellPress,
   onMapPress,
   fillOverride,
+  fitCellIds,
   children,
 }: Props) {
   const ref = useRef<MapView>(null);
   const cellPressedAt = useRef(0);
+  const fitted = useRef(false);
 
   useEffect(() => {
     if (!follow) return;
     ref.current?.animateCamera({ center: toCoord(center) }, { duration: 500 });
   }, [follow, center.lat, center.lng]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (fitted.current || !fitCellIds?.length || !cells) return;
+    const wanted = new Set(fitCellIds);
+    const coords = cells.filter((c) => wanted.has(c.cellId)).flatMap((c) => c.boundary.map(toCoord));
+    if (coords.length === 0) return;
+    fitted.current = true;
+    const pad = { top: 120, right: 48, bottom: 360, left: 48 };
+    // Give the map a moment to lay out before fitting.
+    setTimeout(() => ref.current?.fitToCoordinates(coords, { edgePadding: pad, animated: true }), 300);
+  }, [cells, fitCellIds]);
 
   const handleMapPress = (_e: MapPressEvent) => {
     // On iOS a polygon tap also reaches the map; ignore that echo.

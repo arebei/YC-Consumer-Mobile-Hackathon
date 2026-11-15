@@ -39,6 +39,7 @@ export const type = {
 export const size = {
   buttonLarge: 56, buttonMedium: 44, pill: 28, playerDot: 12, icon: 24, iconStroke: 2,
   swatch: 48, emptyIcon: 64, shopPin: 36, hairline: 1, ring: 3, edge: 3,
+  sheetMax: 420, nameMax: 16,
 } as const;
 
 export const motion = { press: 90, toast: 3000 } as const;
