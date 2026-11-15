@@ -3,9 +3,6 @@ name: Deploy website to GitHub Pages
 on:
   push:
     branches: [main]
-    paths:
-      - "web/**"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -25,6 +22,21 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Export the app for web
+        run: npx expo export -p web
+        env:
+          EXPO_PUBLIC_CONVEX_URL: https://fantastic-crocodile-610.convex.cloud
+      # Pages serves 404.html for unknown paths, so a reload on /app/home still boots the app.
+      - name: Put the app under /app/
+        run: |
+          rm -rf web/app
+          cp -r dist web/app
+          cp dist/index.html web/404.html
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
