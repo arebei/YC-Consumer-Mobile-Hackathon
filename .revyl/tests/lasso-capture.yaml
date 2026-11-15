@@ -2,10 +2,10 @@
 
 _meta:
     remote_id: 31693443-f664-4421-a5e0-017ce20fe872
-    remote_version: 1
-    local_version: 1
-    last_synced_at: "2026-11-15T21:53:11Z"
-    checksum: 8a179e7f126299819fcc09356e04740587db99eb813c46e875b3b18d117454b6
+    remote_version: 2
+    local_version: 2
+    last_synced_at: "2026-11-15T15:34:16-08:00"
+    checksum: 256689205303522bfc0f214a4493c589500818e7e44cd7a0cb8a43c5f53e3e79
 test:
     metadata:
         name: lasso-capture
@@ -20,7 +20,7 @@ test:
         - type: validation
           step_description: A map is visible with a 'Start walk' button at the bottom
         - type: instructions
-          step_description: Tap the 'Demo tools' button
+          step_description: Tap 'Menu', then tap the 'Demo tools' button
         - type: instructions
           step_description: 'Tap ''Fake loop: small'''
         - type: validation

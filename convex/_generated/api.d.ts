@@ -14,6 +14,7 @@ import type * as config from "../config.js";
 import type * as events from "../events.js";
 import type * as grid from "../grid.js";
 import type * as leaderboard from "../leaderboard.js";
+import type * as lib_capture from "../lib/capture.js";
 import type * as lib_config from "../lib/config.js";
 import type * as lib_flag from "../lib/flag.js";
 import type * as lib_grid from "../lib/grid.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   events: typeof events;
   grid: typeof grid;
   leaderboard: typeof leaderboard;
+  "lib/capture": typeof lib_capture;
   "lib/config": typeof lib_config;
   "lib/flag": typeof lib_flag;
   "lib/grid": typeof lib_grid;

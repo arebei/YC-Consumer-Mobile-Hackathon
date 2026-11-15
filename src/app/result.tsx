@@ -108,6 +108,9 @@ export default function Result() {
         <GlassCard style={styles.card}>
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.cardContent}>
             <StatNumber value={count} label="Blocks claimed" valueColor={color.accent} />
+            {result.pointsEarned > 0 && (
+              <Text style={[type.title2, styles.accent]}>{`+${result.pointsEarned} points`}</Text>
+            )}
             <Text style={[type.bodyStrong, styles.text]}>{headline}</Text>
             {result.stolen > 0 && (
               <Text style={[type.body, styles.text]}>
@@ -152,4 +155,5 @@ const styles = StyleSheet.create({
   text: { color: color.text },
   muted: { color: color.textMuted },
   center: { textAlign: 'center' },
+  accent: { color: color.accent },
 });

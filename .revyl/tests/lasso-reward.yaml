@@ -2,10 +2,10 @@
 
 _meta:
     remote_id: 9a68308a-1a08-46c3-8e2c-45bb8dec2005
-    remote_version: 1
-    local_version: 1
-    last_synced_at: "2026-11-15T21:53:15Z"
-    checksum: c5a72c57b2f9e859ff60a08abc5e2a6c9bffe2c6457efca45ce116a252fdf786
+    remote_version: 2
+    local_version: 2
+    last_synced_at: "2026-11-15T15:34:14-08:00"
+    checksum: 6ac5795e05ca1f771facef43e593e78bbbec75236092d4cf77a975c75800e50e
 test:
     metadata:
         name: lasso-reward
@@ -18,7 +18,7 @@ test:
         - type: instructions
           step_description: If a location permission dialog appears, allow location while using the app
         - type: instructions
-          step_description: Tap 'Demo tools', then tap 'Seed venue shops'
+          step_description: Tap 'Menu', then tap 'Demo tools', then tap 'Seed venue shops'
         - type: instructions
           step_description: 'In the Fake loop section choose ''Around: Happy Cow Creamery & Tea'', then tap ''Fake loop: small'''
         - type: validation
@@ -28,7 +28,7 @@ test:
         - type: validation
           step_description: The card at the bottom says 'You hold Happy Cow Creamery & Tea'
         - type: instructions
-          step_description: Tap 'Demo tools', tap 'End the week', turn on the 'Demo redeem' switch, then close Demo tools
+          step_description: Tap 'Menu', then tap 'Demo tools', tap 'End the week', turn on the 'Demo redeem' switch, then close Demo tools
         - type: instructions
           step_description: Tap 'Shops'
         - type: validation

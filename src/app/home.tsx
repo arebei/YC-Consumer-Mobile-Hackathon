@@ -11,14 +11,15 @@ import { Button } from '../components/Button';
 import { FlagSheet } from '../components/FlagSheet';
 import { FlagText } from '../components/FlagText';
 import { GlassCard } from '../components/GlassCard';
-import { Swords } from '../components/icons';
+import { Menu as MenuIcon, Swords } from '../components/icons';
+import { MenuPanel } from '../components/MenuPanel';
 import { LassoMap } from '../components/LassoMap';
 import { Pill } from '../components/Pill';
 import { PlayerDot } from '../components/PlayerDot';
 import { ShopPin } from '../components/ShopPin';
 import { Skeleton } from '../components/Skeleton';
 import { useReconnecting } from '../lib/connection';
-import { blocks, formatDistance, formatHeld } from '../lib/format';
+import { blocks, formatDistance, formatHeld, pts } from '../lib/format';
 import { useReduceMotion } from '../lib/motion';
 import { usePlayer } from '../lib/player';
 import { useCurrentPosition } from '../lib/position';
@@ -44,6 +45,8 @@ export default function Home() {
   const shops = useQuery(api.shops.list);
   const events = useQuery(api.events.forMe, playerId ? { playerId } : 'skip');
   const rewards = useQuery(api.rewards.mine, playerId ? { playerId } : 'skip');
+  const wallet = useQuery(api.wallet.mine, playerId ? { playerId } : 'skip');
+  const [menuOpen, setMenuOpen] = useState(false);
   const reconnecting = useReconnecting();
   const { position, usingVenue, permission } = useCurrentPosition(config?.center, config?.demoMode);
   // Faint grid of nearby blocks. Round to about 100 m so it does not re-query on every GPS tick.
@@ -222,6 +225,7 @@ export default function Home() {
                 </Text>
                 <Text style={[type.callout, styles.muted, styles.tabular]}>
                   {myBlocks === undefined ? '…' : blocks(myBlocks)}
+                  {wallet ? ` · ${pts(wallet.balance)}` : ''}
                 </Text>
               </GlassCard>
             </Pressable>
@@ -241,9 +245,16 @@ export default function Home() {
             {usingVenue && <Pill label="Using the venue as your location" />}
             {reconnecting && <Pill label="Reconnecting…" variant="danger" />}
           </View>
-          {config?.demoMode && (
-            <Button label="Demo tools" variant="secondary" size="medium" onPress={() => router.push('/admin')} />
-          )}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Menu"
+            onPress={() => setMenuOpen(true)}
+            style={({ pressed }) => [pressed && styles.pressed]}>
+            <GlassCard style={styles.menuBtn}>
+              <MenuIcon size={size.icon} strokeWidth={size.iconStroke} color={color.text} />
+              <Text style={[type.bodyStrong, styles.text]}>Menu</Text>
+            </GlassCard>
+          </Pressable>
         </View>
       </View>
 
@@ -313,6 +324,7 @@ export default function Home() {
       </View>
 
       {config && <FlagSheet visible={flagSheet} onClose={() => setFlagSheet(false)} maxChars={config.maxFlagChars} />}
+      <MenuPanel visible={menuOpen} onClose={() => setMenuOpen(false)} />
     </View>
   );
 }
@@ -332,6 +344,8 @@ const styles = StyleSheet.create({
   card: { gap: space.sm },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   buttonRow: { flexDirection: 'row', gap: space.sm },
+  menuBtn: { flexDirection: 'row', alignItems: 'center', gap: space.xs, paddingVertical: space.sm },
+  pressed: { opacity: 0.7 },
   dot: {
     position: 'absolute',
     top: -space.xxs,

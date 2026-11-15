@@ -12,7 +12,7 @@ test:
     - type: validation
       step_description: "A map is visible with a 'Start walk' button at the bottom"
     - type: instructions
-      step_description: "Tap the 'Demo tools' button"
+      step_description: "Tap 'Menu', then tap the 'Demo tools' button"
     - type: instructions
       step_description: "Tap 'Fake loop: small'"
     - type: validation

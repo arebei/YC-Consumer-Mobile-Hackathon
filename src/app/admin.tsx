@@ -79,6 +79,7 @@ export default function Admin() {
   const seed = useMutation(api.admin.seedShops);
   const endSeason = useMutation(api.season.end);
   const reset = useMutation(api.admin.reset);
+  const grantPoints = useMutation(api.admin.grantPoints);
 
   const demo = useStore(demoRedeem);
 
@@ -322,6 +323,24 @@ export default function Admin() {
             onPress={seedJson}
             loading={busy === 'json'}
             disabled={json.trim().length === 0}
+          />
+        </Section>
+
+        {/* Points */}
+        <Section title="Points">
+          <Button
+            label="Add 500 points"
+            variant="secondary"
+            size="medium"
+            loading={busy === 'points'}
+            disabled={!player}
+            onPress={() =>
+              run('points', async () => {
+                if (!player) return;
+                const res = await grantPoints({ playerId: player.playerId, amount: 500 });
+                toast.show(`${player.name} now has ${res.balance} points.`);
+              })
+            }
           />
         </Section>
 

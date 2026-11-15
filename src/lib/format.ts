@@ -46,3 +46,23 @@ export function clampChars(text: string, max: number): string {
   const chars = Array.from(text);
   return chars.length <= max ? text : chars.slice(0, max).join('');
 }
+
+/** "just now", "5 min ago", "3 h ago", "2 d ago". */
+export function timeAgo(ts: number, now: number = Date.now()): string {
+  const min = Math.floor(Math.max(0, now - ts) / 60000);
+  if (min < 1) return 'just now';
+  if (min < 60) return `${min} min ago`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h} h ago`;
+  return `${Math.floor(h / 24)} d ago`;
+}
+
+/** "300 pts" */
+export function pts(n: number): string {
+  return `${n.toLocaleString('en-US')} pts`;
+}
+
+/** "+12" / "-300" */
+export function signed(n: number): string {
+  return n > 0 ? `+${n}` : `${n}`;
+}
