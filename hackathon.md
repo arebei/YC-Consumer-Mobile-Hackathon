@@ -11,8 +11,9 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - Live updates: the map (`cells.all`), shop standings (`shops.list`) and steal alerts (`events.forMe`) are reactive queries, so a capture shows up on every phone and on the big screen at once.
 - Scheduled functions: `rewards.redeem` schedules `payments.chargeShopFee`, which polls Whop with `payments.checkFee`.
 - Points economy (contract v4): every captured walk earns points; `offers.exchange` spends them on shop offers and issues a voucher; every balance change writes one `ledger` row inside the same transaction, so a balance can never drift from its history.
+- Block decay without a scheduler: a block loses 1 strength per hour since it was claimed or refreshed, computed at read time (`effectiveStrength` in `convex/lib/loop.ts`), so every query and the capture rule see the same number and a block decayed to 0 is simply free. Walking your own loop again refreshes it.
 - The map grid is H3 hexagons (`h3-js`, resolution 11) running inside Convex functions.
-- Tests: `convex-test` + `vitest` (`npx vitest run`): 41 tests over the pure rules and the public API.
+- Tests: `convex-test` + `vitest` (`npx vitest run`): 45 tests over the pure rules and the public API.
 
 ### Whop (payments)
 - The shop pays a small fee each time a reward is redeemed. `convex/payments.ts` creates and issues a Whop invoice in the sandbox and stores its hosted payment link.
@@ -51,4 +52,9 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - 16:03: contract v5 (owner request): store page per shop, profile, settings, and a full ranking.
 - 16:04: backend B10 (`b7c130c`): both leaderboards return up to 50 rows for the full ranking; tests 41/41.
 - 16:27: app F11 (contract v5 screens: store page, Profile, Settings, full Ranking) received by the Lead and committed; tsc clean, vitest 41/41.
+- 16:31: final Revyl cloud build `final-321f4fc` (`revyl build`, 4 min 24 s).
+- 16:40: EAS Update published to channel `production`; public Expo Go link: exp://u.expo.dev/645c8e44-232b-4039-89fa-150e9db327f5?channel-name=production
+- 16:43: landing page copy pass (owner feedback).
 - 16:45: feature freeze.
+- 17:13: `lasso-capture` on build `final-321f4fc` passed 8/8 in 165 s. Public report: https://app.revyl.ai/tests/report?token=eab3138e-98f1-43ed-b08f-77f5c7969bff
+- 17:14: backend B12 (owner request): block decay, 1 strength per hour, computed at read time; `cells.all` rows gain `fadesAt`; tests 45/45.

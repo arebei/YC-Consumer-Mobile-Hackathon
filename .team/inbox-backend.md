@@ -13,3 +13,6 @@ Contract v5 (last section of specs/lasso-backend.md): leaderboards return up to 
 
 ## Task B11 (16:27, new LEAD session)
 Freeze 4:45: fixes only after that. Stay on call. Add the 16:00-16:45 entries (contract v5, B10, F11) to hackathon.md and report.
+
+## Task B12 (17:11, owner request, hard stop 17:28)
+Block decay: -1 strength per DECAY_EVERY_MS (1 h today) since last claim/refresh, free at 0; own loop refreshes. Effective strength computed at read time in captureWalk and every strength/ownership query; same shapes. Tests, deploy, report.

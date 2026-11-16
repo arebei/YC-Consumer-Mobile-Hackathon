@@ -1,6 +1,7 @@
 import { query } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { shopNeeded } from "./lib/rules";
+import { effectiveStrength } from "./lib/loop";
 
 export type ShopView = {
   shopId: Id<"shops">; name: string; lat: number; lng: number; reward: string; feeCents: number;
@@ -18,8 +19,10 @@ export const list = query({
     const out: ShopView[] = [];
     for (const s of await ctx.db.query("shops").collect()) {
       const cell = await ctx.db.query("cells").withIndex("by_cellId", (q) => q.eq("cellId", s.cellId)).unique();
-      const holder = cell ? await ctx.db.get(cell.ownerId) : null;
-      const strength = cell && holder ? cell.strength : 0;
+      // B12: a shop block decayed to 0 has no holder.
+      const eff = cell ? effectiveStrength(cell.strength, cell.claimedAt, Date.now()) : 0;
+      const holder = cell && eff > 0 ? await ctx.db.get(cell.ownerId) : null;
+      const strength = cell && holder ? eff : 0;
 
       const rows = await ctx.db.query("shopHolds").withIndex("by_shopId", (q) => q.eq("shopId", s._id)).collect();
       const holds = rows.map((r) => ({ playerId: r.playerId, heldMs: r.heldMs }));

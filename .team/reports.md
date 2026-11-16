@@ -190,3 +190,29 @@
 - `MenuPanel` opened the next screen only from the iOS Modal `onDismiss` event. If that event ever fails to fire, "Menu" > "Demo tools" would do nothing and every revyl/*.yaml test would stall. It now also navigates from a 600 ms fallback timer; whichever runs first clears the pending route, so it never navigates twice.
 - Checked revyl/*.yaml against the current labels: all steps match (Nickname, colour circles, Start, Start walk, Menu, Demo tools, Fake loop: small/large, Around: Happy Cow Creamery & Tea, Seed venue shops, End the week, Demo redeem, Shops, YOUR REWARDS, Redeem, Redeemed., Add test player, Acting as, Switch player, Back to map, You claimed, BLOCKS CLAIMED, were taken from other players, Sam took). No label changes since F10.
 - root `npx tsc --noEmit` exit 0; iOS export builds.
+
+## F13: more content in Wallet, Rewards, Analytics, Invite; F14 rule line (HACK-FRONTEND, 17:13)
+- `src/app/wallet.tsx`: "Next voucher" card: progress bar of your balance toward the cheapest offer you can't afford yet, "120 pts to a Free croissant", "at <shop>. Every 10 m walked is 1 point, every block 10."; "You can afford every offer on the map." / "Offers appear when shops join the map." when there is none. "Offers you can afford": up to 3 `OfferCard`s (most expensive first), or "Nothing yet. A 500 m loop earns about 50 points plus 10 per block."
+- `src/app/rewards.tsx`: "UP FOR GRABS THIS WEEK": each shop's prize in gold, shop name, "Sam holds it now" / "You hold it now" / "Nobody holds it yet" with the holder's dot, "Enclose N to take it"; tapping opens the Store page.
+- `src/app/analytics.tsx`: new tiles from `stats.recent` / `totalM`: "Days in a row" (streak of days with a walk, ending today or yesterday), "Longest loop, blocks", "Best day" (metres, follows the units setting), "Blocks claimed", "~N About kcal burned" (0.05 kcal per metre). Minutes walked / pace skipped: walks have no duration in the data. Note: `recent` is the newest 30 walks, so streak, best day and blocks claimed cover those 30.
+- `src/app/invite.tsx`: "Invite by email": Email field + "Send invite" (disabled until it looks like an email) opens `mailto:` with subject "Join me on Lasso" and a body with the website link; "No email app is set up on this device." toast if it can't open.
+- F14 (partial): About's rule list gains "Blocks fade: they lose 1 strength every hour unless you walk them again." `cells.all` has no `fadesAt` yet, so there is no "Fades in 23 min" line. Tell me when B12 adds it and I'll add it to the target card and the tap-a-block card.
+- No revyl label changed. root `npx tsc --noEmit` exit 0; iOS export builds (3.4 MB).
+- Note: while writing the Wallet change, a shell quoting slip briefly put the output of Windows' `at` command (a deprecation/usage message, nothing scheduled) into wallet.tsx; I replaced those lines before type-checking. The file is clean.
+
+## HACK-BACKEND: B12: block decay (done, deployed, 17:14)
+- Rule: effective = stored - floor((now - claimedAt) / DECAY_EVERY_MS), never below 0. At 0 the block is free. Config in `convex/lib/config.ts`: `DECAY_ENABLED = true`, `DECAY_EVERY_MS = 1 hour`. No scheduler and no schema change: `cells.claimedAt` already exists.
+- Capture (`lib/rules.ts` planCapture, used by walks.submit and demoSeed):
+  - Steal checks n > effective.
+  - A decayed block (effective 0) is claimed, not stolen, so there is no steal event. If it is a shop block, the old holder is credited hold time up to the moment it decayed.
+  - Own live block = refresh: strength = max(effective, n), and `claimedAt = now` restarts the clock (written in `lib/capture.ts`). Shop hold time so far is banked first, so refreshing never loses season time.
+- Reads use effective strength and treat 0 as unowned:
+  - `cells.all` skips decayed blocks, returns effective `strength`, and adds `fadesAt` (ms when the strength next drops by 1).
+  - `shops.list` has no holder when decayed; strength and needed are effective.
+  - `leaderboard.top` and `stats.mine.blocksHeld` count only live blocks.
+  - `season.end` (seasonWinners) ends the holder's stretch at decay.
+  - Events keep the strength from the moment of the steal (history).
+- Note: Convex queries re-run when data changes, not as time passes, so a screen shows the decay the next time anything changes. `fadesAt` lets the app count down on its own.
+- Tests: new `convex/decay.test.ts` (4 tests: the formula and nextDropAt; decay to free (off the map, no shop holder, off the leaderboard, re-claim without an event); a smaller loop steals once the defender has decayed; an own loop refreshes and restarts the clock). I changed 2 kit tests in `lib/loop.test.ts` to the new rule (the blocked test now uses a fresh block; the own-cells test now expects refresh) and fixed my leaderboard test data (claimedAt now). tsc is clean and vitest passes 45/45.
+- Live check: `cells:all` returns `fadesAt`. The 7 blocks from the 17:13 Revyl capture test show strength 7.
+- Files to commit: convex/lib/config.ts, convex/lib/loop.ts, convex/lib/rules.ts, convex/lib/capture.ts, convex/cells.ts, convex/shops.ts, convex/leaderboard.ts, convex/stats.ts, convex/decay.test.ts (new), convex/lib/loop.test.ts, convex/leaderboard.test.ts, hackathon.md.

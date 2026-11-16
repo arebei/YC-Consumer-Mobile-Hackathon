@@ -1,5 +1,5 @@
 import {
-  CLOSE_RADIUS_M, DECAY_ENABLED, MAX_ACCURACY_M, MAX_FAST_SHARE, MAX_POINTS,
+  CLOSE_RADIUS_M, DECAY_ENABLED, DECAY_EVERY_MS, MAX_ACCURACY_M, MAX_FAST_SHARE, MAX_POINTS,
   MAX_SPEED_MPS, MIN_LOOP_M, MIN_POINTS, SPIKE_SPEED_MPS,
 } from "./config";
 
@@ -83,10 +83,21 @@ export function isTooFast(points: Point[]): boolean {
   return fastShare(points) > MAX_FAST_SHARE;
 }
 
+/** B12 decay: 1 strength lost per DECAY_EVERY_MS since the block was claimed or refreshed. 0 means the block is free. */
 export function effectiveStrength(strength: number, claimedAt: number, now: number): number {
   if (!DECAY_ENABLED) return strength;
-  const hours = Math.max(0, now - claimedAt) / 3_600_000;
-  return strength * 0.5 ** (hours / 24);
+  return Math.max(0, strength - Math.floor(Math.max(0, now - claimedAt) / DECAY_EVERY_MS));
+}
+
+/** When the effective strength next drops by 1 (null when decay is off). */
+export function nextDropAt(claimedAt: number, now: number): number | null {
+  if (!DECAY_ENABLED) return null;
+  return claimedAt + (Math.floor(Math.max(0, now - claimedAt) / DECAY_EVERY_MS) + 1) * DECAY_EVERY_MS;
+}
+
+/** When a block decays to 0 and becomes free (Infinity when decay is off). */
+export function decaysAt(strength: number, claimedAt: number): number {
+  return DECAY_ENABLED ? claimedAt + strength * DECAY_EVERY_MS : Infinity;
 }
 
 /** Steps 1 and 2 of walks.submit. */

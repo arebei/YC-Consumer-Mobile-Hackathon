@@ -15,7 +15,7 @@ test("leaderboard.top returns at most 50 rows, most blocks first", async () => {
       const ownerId = await ctx.db.insert("players", { deviceId: `d${i}`, name: `P${i}`, color: "#3D7BFF" });
       // Player i owns i + 1 blocks.
       for (let k = 0; k <= i; k++) {
-        await ctx.db.insert("cells", { cellId: `c${i}-${k}`, boundary: [], ownerId, strength: 1, claimedAt: 0 });
+        await ctx.db.insert("cells", { cellId: `c${i}-${k}`, boundary: [], ownerId, strength: 1, claimedAt: Date.now() });
       }
     }
   });

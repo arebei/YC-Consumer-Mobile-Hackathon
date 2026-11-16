@@ -101,7 +101,8 @@ describe("rules", () => {
     expect(plan.events).toEqual([{ fromPlayerId: "A", cellCount: 8, strength: 10, shopId: "S1" }]);
   });
   test("equal or smaller loop is blocked", () => {
-    const plan = planCapture({ ids, playerId: "B", now: NOW, cells: mk("A", 8, ids), shops });
+    // Claimed just now, so no decay yet (B12).
+    const plan = planCapture({ ids, playerId: "B", now: NOW, cells: mk("A", 8, ids, NOW), shops });
     expect(plan.takes).toEqual([]);
     expect(plan.result).toMatchObject({ claimed: 0, stolen: 0, blocked: 8 });
     expect(plan.result.notes).toContain("8 blocks are held by a bigger loop.");
@@ -111,12 +112,14 @@ describe("rules", () => {
     expect(plan.creates).toEqual(["a", "b", "d"]);
     expect(plan.result.notes).toEqual(["Blue Door's block needs a loop of 6 or more blocks."]);
   });
-  test("my own cells: strength only goes up, clock never resets, nothing counted", () => {
+  test("my own cells (B12 refresh): strength = max(effective, loop), clock restarts, nothing counted", () => {
+    // Stored 8, claimed an hour ago: effective 7.
     const up = planCapture({ ids: [...ids, "i"], playerId: "A", now: NOW, cells: mk("A", 8, ids), shops });
     expect(up.upgrades.length).toBe(8);
+    expect(up.upgrades.every((u) => u.strength === 9)).toBe(true);
     expect(up.result).toMatchObject({ claimed: 1, stolen: 0 });
     const down = planCapture({ ids: ids.slice(0, 6), playerId: "A", now: NOW, cells: mk("A", 8, ids), shops });
-    expect(down.upgrades).toEqual([]);
+    expect(down.upgrades).toEqual(ids.slice(0, 6).map((cellId) => ({ cellId, strength: 7 })));
     expect(down.result.claimed).toBe(0);
   });
   test("two victims produce two events", () => {

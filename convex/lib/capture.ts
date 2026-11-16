@@ -42,7 +42,8 @@ export async function captureWalk(ctx: MutationCtx, player: Doc<"players">, poin
   for (const id of plan.creates) {
     await ctx.db.insert("cells", { cellId: id, boundary: cellBoundary(id), ownerId: playerId, strength: n, claimedAt: now });
   }
-  for (const u of plan.upgrades) await ctx.db.patch(cellDocs.get(u.cellId)!._id, { strength: u.strength });
+  // B12: a refresh restarts the decay clock.
+  for (const u of plan.upgrades) await ctx.db.patch(cellDocs.get(u.cellId)!._id, { strength: u.strength, claimedAt: now });
   for (const t of plan.takes) await ctx.db.patch(cellDocs.get(t.cellId)!._id, { ownerId: playerId, strength: n, claimedAt: now });
   for (const h of plan.holdCredits) {
     const shopId = h.shopId as Id<"shops">;

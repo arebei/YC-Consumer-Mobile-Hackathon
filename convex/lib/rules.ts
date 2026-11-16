@@ -1,5 +1,5 @@
 import { POINTS_PER_10M, POINTS_PER_BLOCK, SHOP_MIN_BLOCKS } from "./config";
-import { effectiveStrength, type RejectReason } from "./loop";
+import { decaysAt, effectiveStrength, type RejectReason } from "./loop";
 
 // Pure game rules. No database, no clock, no randomness: everything comes in as arguments.
 export type CellState = { cellId: string; ownerId: string; strength: number; claimedAt: number };
@@ -58,10 +58,15 @@ export function planCapture(args: {
     const cell = cells.get(id);
     const shop = shops.get(id);
 
-    // 1. Already mine: keep the stronger number, never reset the clock.
-    if (cell && cell.ownerId === playerId) {
-      const eff = effectiveStrength(cell.strength, cell.claimedAt, now);
-      if (n > eff) plan.upgrades.push({ cellId: id, strength: n });
+    // B12: a block whose strength has decayed to 0 is free again.
+    const eff = cell ? effectiveStrength(cell.strength, cell.claimedAt, now) : 0;
+    const live = cell !== undefined && eff > 0;
+
+    // 1. Already mine: refresh. Strength = max(effective, this loop) and the decay clock restarts
+    //    (captureWalk writes claimedAt = now for every upgrade). The time held so far is banked first.
+    if (live && cell.ownerId === playerId) {
+      plan.upgrades.push({ cellId: id, strength: Math.max(eff, n) });
+      if (shop) plan.holdCredits.push({ shopId: shop.shopId, playerId, addMs: Math.max(0, now - cell.claimedAt) });
       continue;
     }
     // 2. Shop blocks need a real walk.
@@ -69,15 +74,24 @@ export function planCapture(args: {
       plan.result.notes.push(`${shop.name}'s block needs a loop of ${SHOP_MIN_BLOCKS} or more blocks.`);
       continue;
     }
-    // 3. Nobody's: claim it.
-    if (!cell) {
-      plan.creates.push(id);
+    // 3. Nobody's (never claimed, or decayed to 0): claim it. Not a steal, so no event.
+    if (!live) {
+      if (!cell) plan.creates.push(id);
+      else {
+        plan.takes.push({ cellId: id, fromOwnerId: cell.ownerId });
+        // The old holder kept a shop block until it decayed.
+        if (shop) {
+          plan.holdCredits.push({
+            shopId: shop.shopId, playerId: cell.ownerId,
+            addMs: Math.max(0, Math.min(now, decaysAt(cell.strength, cell.claimedAt)) - cell.claimedAt),
+          });
+        }
+      }
       plan.result.claimed++;
       plan.result.claimedCellIds.push(id);
       continue;
     }
-    // 4. A rival's: take it only with a strictly bigger loop.
-    const eff = effectiveStrength(cell.strength, cell.claimedAt, now);
+    // 4. A rival's: take it only with a loop strictly bigger than its effective strength.
     if (n > eff) {
       plan.takes.push({ cellId: id, fromOwnerId: cell.ownerId });
       plan.result.claimed++;
@@ -119,8 +133,13 @@ export function seasonWinners(args: {
     for (const h of args.holds) {
       if (h.shopId === shop.shopId) totals.set(h.playerId, (totals.get(h.playerId) ?? 0) + h.heldMs);
     }
-    const cell = args.cells.get(shop.cellId);
-    if (cell) totals.set(cell.ownerId, (totals.get(cell.ownerId) ?? 0) + Math.max(0, args.now - cell.claimedAt));
+    const stored = args.cells.get(shop.cellId);
+    // B12: the holder's current stretch ends when the block decays; a decayed holder is no longer the holder.
+    const cell = stored && effectiveStrength(stored.strength, stored.claimedAt, args.now) > 0 ? stored : undefined;
+    if (stored) {
+      const end = Math.min(args.now, decaysAt(stored.strength, stored.claimedAt));
+      totals.set(stored.ownerId, (totals.get(stored.ownerId) ?? 0) + Math.max(0, end - stored.claimedAt));
+    }
     let best: { playerId: string; heldMs: number } | null = null;
     for (const [playerId, heldMs] of totals) {
       // Ties go to the current holder, then to the first seen.
