@@ -23,7 +23,7 @@ For people who find exercise boring. You open it tomorrow because someone took y
 **How we used the sponsor tools:**
 - **Convex:** the whole backend: database, all game rules, live updates to every phone and the big screen, and scheduled functions that call Whop. Capture is one transaction, so a block can never have two owners. H3 hexagon grid runs inside Convex functions. Points economy (earn by walking, exchange for shop vouchers), top-50 rankings. 41 tests.
 - **Capy:** cloud agents driven through the Capy API. four threads, four merged PRs: #1 the big-screen live map (`screen/`), #2 Revyl proof of changes on every PR (after building the iOS app on Revyl and running our smoke tests), #3 the public website, #4 a playable browser version with a Leaflet map.
-- **Revyl:** the app built for iOS and run on a cloud iPhone 16 with three plain-English smoke tests (capture, steal, reward). Capture report: https://app.revyl.ai/tests/report?token=2903123c-f791-45a8-9e96-37b03be6db72
+- **Revyl:** the app built for iOS and run on a cloud iPhone 16 with three plain-English smoke tests (capture, steal, reward). Latest capture run on the final build (8/8, 2m45s): https://app.revyl.ai/tests/report?token=eab3138e-98f1-43ed-b08f-77f5c7969bff
 - **Whop (sponsor):** redeeming a reward creates a $1.00 invoice for the shop in Whop's sandbox and follows it until paid.
 
 **Build log with evidence:** https://github.com/azizjonrahimov/YC-Consumer-Mobile-Hackathon/blob/main/hackathon.md
