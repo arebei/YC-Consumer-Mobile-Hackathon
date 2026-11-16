@@ -30,6 +30,8 @@ Demo tools are under **Menu** (top right) > **Demo tools**, or hold the player c
 
 ## Say plainly on stage
 
+- Blocks fade: each loses 1 strength an hour unless you walk it again (1 per day in a real neighbourhood). So no single athlete owns the map, and you come back daily. Strengths you see on screen are live, so read the "Enclose N" number off the phone rather than from this script.
+
 - Today's blocks are demo-sized (about 50 m). Real neighbourhoods use bigger blocks: about a kilometre of walking takes a shop.
 - The shops are real places near YC; the rewards are samples we made up.
 - Built today with Convex (the whole backend), Capy (cloud agents that built the big screen and ran our Revyl tests), Revyl (a cloud iPhone running our smoke tests) and Whop (the shop's fee, in sandbox).

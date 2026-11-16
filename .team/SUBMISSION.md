@@ -11,10 +11,10 @@ Required: tag **Consumer Mobile Hackathon**, a **demo video**, a **public GitHub
 **Tagline (one line):** Walk a loop. Own the blocks inside it.
 
 **Short description:**
-Lasso is a walking game for your neighbourhood. Walk a closed loop to claim every map block inside it, and earn points to spend on vouchers from the shops on your map. Neighbours steal blocks back with bigger loops, and a red banner tells you who took them, with their taunt, and exactly how big a loop wins them back. Local shops put up the prizes: hold a shop's block the longest this week and you win its reward, redeemed in person, while the shop pays a small fee through Whop.
+Lasso is a walking game for your neighbourhood. Walk a closed loop to claim every map block inside it, and earn points to spend on vouchers from the shops on your map. Blocks fade a little every hour unless you walk them again, so no single runner can own the neighbourhood. Neighbours steal blocks back with bigger loops, and a red banner tells you who took them, with their taunt, and exactly how big a loop wins them back. Local shops put up the prizes: hold a shop's block the longest this week and you win its reward, redeemed in person, while the shop pays a small fee through Whop.
 
 **Who it's for / why they'd open it tomorrow:**
-For people who find exercise boring. You open it tomorrow because someone took your blocks overnight, the week's prize is still in play, and the map is live: every capture shows on every phone in under a second.
+For people who find exercise boring. You open it tomorrow because your blocks are fading and someone took a few overnight, the week's prize is still in play, and the map is live: every capture shows on every phone in under a second.
 
 **GitHub (public):** https://github.com/azizjonrahimov/YC-Consumer-Mobile-Hackathon
 

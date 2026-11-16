@@ -13,6 +13,7 @@ People who know they should walk more and find exercise boring. Lasso gives them
 ## Why you'd open it again tomorrow
 
 - **Someone took your blocks.** The red banner tells you who did it, quotes their flag at you, and tells you exactly how big a loop takes them back: "Sam took 3 of your blocks with a 9-block loop: “thanks for the coffee”. Enclose 10 to take them back."
+- **Your blocks are fading.** Every hour they lose strength, so a short walk today keeps them yours.
 - **The week is running.** The shop's prize goes to whoever holds its block the longest, so time held counts every day.
 - **The map is live.** Every capture shows up on every phone and on the big screen in under a second.
 
@@ -22,10 +23,11 @@ People who know they should walk more and find exercise boring. Lasso gives them
 2. Tap **Start walk**, walk a loop and come back to the start. The loop closes by itself.
 3. Every block whose centre is inside your loop is yours. A block's strength is the size of the loop that claimed it.
 4. A rival takes a block only with a loop of more blocks than its strength. A shop's block needs a loop of at least 6 blocks.
-5. When the week ends, the longest holder of each shop gets a code to redeem at the counter, and the shop is invoiced a small fee through Whop.
-6. Only walking and running count. Loops covered faster than a run are rejected.
-7. Every walk earns points. Spend them in **Exchange** (or on a shop's **Store** page) on vouchers from the local shops, kept in your **Wallet** and used at the counter.
-8. The **Menu** (top right) holds Profile, Wallet, Exchange, Rewards, Shops, Ranking (top 50 by points or blocks, with your rank), Analytics (7-day walking chart), Invite (QR), Settings (miles/metres, haptics, reduce motion) and About.
+5. **Blocks fade.** A block loses 1 strength every hour unless you walk it again; at zero it is free. One big run can't hold a neighbourhood for ever, and a short walk every day keeps your streets. (1 hour is today's demo setting; real neighbourhoods would fade 1 per day.)
+6. When the week ends, the longest holder of each shop gets a code to redeem at the counter, and the shop is invoiced a small fee through Whop.
+7. Only walking and running count. Loops covered faster than a run are rejected.
+8. Every walk earns points. Spend them in **Exchange** (or on a shop's **Store** page) on vouchers from the local shops, kept in your **Wallet** and used at the counter.
+9. The **Menu** (top right) holds Profile, Wallet, Exchange, Rewards, Shops, Ranking (top 50 by points or blocks, with your rank), Analytics (7-day walking chart), Invite (QR), Settings (miles/metres, haptics, reduce motion) and About.
 
 Today's blocks are demo-sized (about 50 m across): a loop of roughly 500 m takes a shop. The shops are real places near YC; the rewards are samples the team made up, and no shop has signed up yet.
 
