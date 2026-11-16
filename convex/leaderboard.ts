@@ -1,5 +1,6 @@
 import { query } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
+import { LEADERBOARD_LIMIT } from "./lib/config";
 
 export const top = query({
   args: {},
@@ -11,7 +12,7 @@ export const top = query({
       const p = await ctx.db.get(playerId);
       if (p) out.push({ playerId, name: p.name, color: p.color, blocks });
     }
-    return out.sort((a, b) => b.blocks - a.blocks).slice(0, 10);
+    return out.sort((a, b) => b.blocks - a.blocks).slice(0, LEADERBOARD_LIMIT);
   },
 });
 
@@ -21,5 +22,5 @@ export const points = query({
     (await ctx.db.query("players").collect())
       .map((p) => ({ playerId: p._id, name: p.name, color: p.color, points: p.points ?? 0 }))
       .sort((a, b) => b.points - a.points)
-      .slice(0, 10),
+      .slice(0, LEADERBOARD_LIMIT),
 });

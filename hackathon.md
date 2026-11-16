@@ -12,7 +12,7 @@ Lasso is a walking game: walk a closed loop to claim the map blocks inside it, s
 - Scheduled functions: `rewards.redeem` schedules `payments.chargeShopFee`, which polls Whop with `payments.checkFee`.
 - Points economy (contract v4): every captured walk earns points; `offers.exchange` spends them on shop offers and issues a voucher; every balance change writes one `ledger` row inside the same transaction, so a balance can never drift from its history.
 - The map grid is H3 hexagons (`h3-js`, resolution 11) running inside Convex functions.
-- Tests: `convex-test` + `vitest` (`npx vitest run`): 39 tests over the pure rules and the public API.
+- Tests: `convex-test` + `vitest` (`npx vitest run`): 41 tests over the pure rules and the public API.
 
 ### Whop (payments)
 - The shop pays a small fee each time a reward is redeemed. `convex/payments.ts` creates and issues a Whop invoice in the sandbox and stores its hosted payment link.

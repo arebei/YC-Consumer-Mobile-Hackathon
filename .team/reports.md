@@ -165,3 +165,8 @@
 - Revyl: the 3 tests now go through Menu, pushed to Revyl as v2 (after `244b564`).
 - Timeline: 15:34 F10 (`244b564`) menu panel making the points economy playable end to end; plus the Capy threads 3 and 4 line. The points economy was already in the Convex section and at 15:28.
 - No email address in the file (checked). File to commit: hackathon.md. On call for fixes until 4:30.
+
+## HACK-BACKEND: B10: leaderboards return up to 50 rows (done)
+- `leaderboard.top` and `leaderboard.points` now return at most 50 rows, with the same shapes. The limit is `LEADERBOARD_LIMIT = 50` in `convex/lib/config.ts`.
+- New `convex/leaderboard.test.ts`: one test each (55 players, so exactly 50 rows come back, ordered most first, with the right first and 50th rows). tsc is clean and vitest passes 41/41.
+- Files to commit: convex/lib/config.ts, convex/leaderboard.ts, convex/leaderboard.test.ts.
