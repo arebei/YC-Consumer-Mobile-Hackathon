@@ -82,6 +82,33 @@ function WeekChart({ recent }: { recent: Walk[] }) {
 }
 
 const STATUS: Record<string, string> = { captured: 'Captured', rejected: 'Did not count' };
+const KCAL_PER_M = 0.05;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const dayStart = (ts: number) => {
+  const d = new Date(ts);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+/** Extra numbers from the walks we already have (stats.recent is the newest 30 walks). */
+function extraStats(recent: Walk[], totalM: number) {
+  const captured = recent.filter((w) => w.status === 'captured');
+  const longest = captured.reduce((m, w) => Math.max(m, w.cellCount), 0);
+  const blocksClaimed = captured.reduce((s, w) => s + w.cellCount, 0);
+  const perDay = new Map<number, number>();
+  for (const w of recent) perDay.set(dayStart(w.createdAt), (perDay.get(dayStart(w.createdAt)) ?? 0) + w.lengthM);
+  const bestDay = Math.max(0, ...perDay.values());
+  // Streak: days in a row with a walk, ending today (or yesterday if not walked yet today).
+  let day = dayStart(Date.now());
+  if (!perDay.has(day)) day -= DAY_MS;
+  let streak = 0;
+  while (perDay.has(day)) {
+    streak++;
+    day = dayStart(day - DAY_MS / 2);
+  }
+  return { longest, blocksClaimed, bestDay, streak, kcal: Math.round(totalM * KCAL_PER_M) };
+}
 
 export default function Analytics() {
   useSettings();
@@ -124,6 +151,28 @@ export default function Analytics() {
               <Card style={styles.tile}>
                 <StatNumber value={rankText(blocksRank)} label="Rank by blocks" />
               </Card>
+              {(() => {
+                const x = extraStats(stats.recent, stats.totalM);
+                return (
+                  <>
+                    <Card style={styles.tile}>
+                      <StatNumber value={x.streak} label={x.streak === 1 ? 'Day streak' : 'Days in a row'} valueColor={color.accent} />
+                    </Card>
+                    <Card style={styles.tile}>
+                      <StatNumber value={x.longest} label="Longest loop, blocks" />
+                    </Card>
+                    <Card style={styles.tile}>
+                      <StatNumber value={formatDistance(x.bestDay)} label="Best day" />
+                    </Card>
+                    <Card style={styles.tile}>
+                      <StatNumber value={x.blocksClaimed} label="Blocks claimed" />
+                    </Card>
+                    <Card style={styles.tile}>
+                      <StatNumber value={`~${x.kcal.toLocaleString('en-US')}`} label="About kcal burned" />
+                    </Card>
+                  </>
+                );
+              })()}
             </View>
 
             <Card style={styles.section}>

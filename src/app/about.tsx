@@ -13,6 +13,7 @@ const RULES = [
   'A block is as strong as the loop that claimed it.',
   'Take a block with a bigger loop than its strength.',
   'Hold a shop’s block longest this week to win its reward.',
+  'Blocks fade: they lose 1 strength every hour unless you walk them again.',
   'Walks earn points. Spend them on shop offers.',
 ];
 

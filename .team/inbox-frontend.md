@@ -13,3 +13,6 @@ Contract v5 (last section of specs/lasso-frontend.md): Store page with offers, P
 
 ## Task F12 (16:27, new LEAD session)
 F11 received; LEAD is committing it. Freeze 4:45: no new features. Report any label change that affects revyl/*.yaml; otherwise fix bugs only.
+
+## Task F13 (17:08, owner request, hard stop 17:25)
+Wallet next-voucher bar + affordable offers; Rewards "Up for grabs this week"; more Analytics tiles; Invite by email (mailto). Existing data only, no label changes for revyl/*.yaml.

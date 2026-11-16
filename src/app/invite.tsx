@@ -1,4 +1,5 @@
-import { Linking, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Linking, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '../components/Button';
@@ -9,9 +10,22 @@ import { useToast } from '../components/Toast';
 import { WEBSITE_URL } from '../lib/links';
 import { color, radius, size, space, type } from '../theme';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 export default function Invite() {
   const insets = useSafeAreaInsets();
   const toast = useToast();
+  const [email, setEmail] = useState('');
+
+  const sendEmail = () => {
+    const subject = encodeURIComponent('Join me on Lasso');
+    const body = encodeURIComponent(
+      `Walk a loop, own the blocks inside it, and win prizes from local shops.\n\nPlay Lasso: ${WEBSITE_URL}`,
+    );
+    Linking.openURL(`mailto:${email.trim()}?subject=${subject}&body=${body}`).catch(() =>
+      toast.error('No email app is set up on this device.'),
+    );
+  };
 
   const share = async () => {
     try {
@@ -41,6 +55,22 @@ export default function Invite() {
           </Text>
         </Card>
         <Button label="Open website" variant="secondary" onPress={() => Linking.openURL(WEBSITE_URL).catch(() => {})} />
+
+        <Card style={styles.emailCard}>
+          <Text style={[type.overline, styles.muted]}>Invite by email</Text>
+          <TextInput
+            accessibilityLabel="Email"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="neighbour@example.com"
+            placeholderTextColor={color.textFaint}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            style={[type.body, styles.input]}
+          />
+          <Button label="Send invite" variant="secondary" size="medium" onPress={sendEmail} disabled={!EMAIL_RE.test(email.trim())} />
+        </Card>
       </ScrollView>
       <View style={[styles.bottom, { paddingBottom: insets.bottom + space.lg }]}>
         <Button label="Share invite" onPress={share} fullWidth />
@@ -55,6 +85,16 @@ const styles = StyleSheet.create({
   qrCard: { alignItems: 'center', gap: space.md },
   qrFrame: { borderRadius: radius.md, overflow: 'hidden' },
   bottom: { paddingHorizontal: space.lg, paddingTop: space.sm },
+  emailCard: { gap: space.md },
+  input: {
+    color: color.text,
+    backgroundColor: color.bgRaised,
+    borderColor: color.border,
+    borderWidth: size.hairline,
+    borderRadius: radius.md,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.md,
+  },
   text: { color: color.text },
   muted: { color: color.textMuted },
   center: { textAlign: 'center' },

@@ -1,5 +1,9 @@
 import { useQuery } from 'convex/react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { Card } from '../components/Card';
+import { PlayerDot } from '../components/PlayerDot';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { api } from '../../convex/_generated/api';
@@ -19,6 +23,8 @@ export default function Rewards() {
   const args = player ? { playerId: player.playerId } : 'skip';
   const config = useQuery(api.config.public);
   const rewards = useQuery(api.rewards.mine, args);
+  const shops = useQuery(api.shops.list);
+  const router = useRouter();
   const wallet = useQuery(api.wallet.mine, args);
   const { position } = useCurrentPosition(config?.center, config?.demoMode);
   const vouchers = wallet?.vouchers.filter((v) => v.usedAt === null);
@@ -48,6 +54,37 @@ export default function Rewards() {
           ))
         )}
 
+        <Text style={[type.overline, styles.muted, styles.sectionGap]}>Up for grabs this week</Text>
+        {shops === undefined ? (
+          <Skeleton height={120} />
+        ) : shops.length === 0 ? (
+          <Text style={[type.body, styles.muted]}>No shop prizes on the map yet.</Text>
+        ) : (
+          shops.map((s) => {
+            const mine = s.holderId === player?.playerId;
+            return (
+              <Pressable
+                key={s.shopId}
+                accessibilityRole="button"
+                accessibilityLabel={s.name}
+                onPress={() => router.push({ pathname: '/store', params: { shopId: s.shopId } })}
+                style={({ pressed }) => [pressed && styles.pressed]}>
+                <Card style={styles.prize}>
+                  <Text style={[type.bodyStrong, styles.reward]}>{s.reward}</Text>
+                  <Text style={[type.callout, styles.text]}>{s.name}</Text>
+                  <View style={styles.row}>
+                    {s.holderColor && <PlayerDot playerColor={s.holderColor} />}
+                    <Text style={[type.callout, styles.muted, styles.grow]}>
+                      {mine ? 'You hold it now' : s.holderName ? `${s.holderName} holds it now` : 'Nobody holds it yet'}
+                    </Text>
+                    {!mine && <Text style={[type.callout, styles.accent]}>{`Enclose ${s.needed} to take it`}</Text>}
+                  </View>
+                </Card>
+              </Pressable>
+            );
+          })
+        )}
+
         <Text style={[type.overline, styles.muted, styles.sectionGap]}>Vouchers</Text>
         {vouchers === undefined || config === undefined ? (
           <Skeleton height={120} />
@@ -72,4 +109,11 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: space.lg, gap: space.md },
   sectionGap: { marginTop: space.xl },
   muted: { color: color.textMuted },
+  text: { color: color.text },
+  reward: { color: color.reward },
+  accent: { color: color.accent },
+  prize: { gap: space.xs },
+  row: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' },
+  grow: { flexGrow: 1 },
+  pressed: { opacity: 0.7 },
 });
