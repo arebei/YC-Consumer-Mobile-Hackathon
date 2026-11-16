@@ -446,3 +446,22 @@ The Result screen also shows "+N points" under the block count when `pointsEarne
 - **B8** (backend, 25 min): schema, `walks.submit` points, `wallet.mine`, `offers.list`, `offers.exchange`, `vouchers.use`, `stats.mine`, `leaderboard.points`, `admin.grantPoints`, seed and reset changes, tests for points, exchange (enough and not enough), voucher use twice. Push stubs with the right types first (5 min) so the frontend can import.
 - **F10** (frontend): the menu panel, Wallet, Exchange, Rewards, Ranking, Analytics, Invite, About, the Result points line and the chip balance. Build against the types as soon as B8 stubs land.
 Freeze is still 4:30 PM: if behind at 4:15, cut Analytics' chart first, then the Invite QR.
+
+## Contract version 5 additions (owner request, 16:00): store page, profile, settings, full ranking
+
+Shared word for word by both specs. Freeze moves to 4:45 PM.
+
+### Changed
+- `leaderboard.top` and `leaderboard.points` return at most **50** rows (was 10). Same shapes. The client numbers the rows (rank = index + 1, ties share the lower number).
+
+### App (frontend, F11)
+- **Store page** `src/app/store.tsx?shopId=…`: the shop's name, reward, distance, holder line and "Enclose N to take it" (from `shops.list`), then **"Offers"**: every offer for that shop from `offers.list` as a `Card` with title, cost "300 pts" in `accent`, and "Exchange" (same rules and messages as the Exchange screen; disabled with "You need N more points"). Opened by tapping a shop pin on Home, a shop card in Shops, or a shop header in Exchange.
+- **Profile** (new Menu row, second after Home): `PlayerDot`, name, colour, flag; "Edit profile" lets the player change nickname and colour (calls `players.join` with the same `deviceId`, which updates them) and the flag (`players.setFlag`); stats: points, blocks held, walks, distance (from `stats.mine`); rank by points and by blocks (from the two leaderboards; "Not ranked yet" when absent).
+- **Settings** (new Menu row, before About): "Distance units" (Metres / Miles, stored in AsyncStorage, used by every distance on screen), "Haptics" on/off, "Reduce motion" on/off (in addition to the system setting), "Location permission" row showing the status with "Open settings", "Sign out on this device" (confirm, then clear the stored playerId and go to Join; the player and blocks stay on the server), and "About Lasso".
+- **Ranking**: list all rows returned (up to 50) with rank numbers, colour dot, name and the value; a pinned "Your rank" card at the top ("#4 of 12 by points"; "Not ranked yet" if absent).
+- **Analytics**: add "Rank by points" and "Rank by blocks" StatNumbers.
+Cut order if behind at 4:35: Settings units, then Profile rank lines.
+
+### Milestones
+- **B10** (backend, 5 min): the leaderboard limits, one test each.
+- **F11** (frontend): the above. Report by 4:40.

@@ -7,3 +7,6 @@ Notes from LEAD: all libraries in spec section 6 are installed. app.json is set 
 
 ## Task F10 (15:16)
 Owner request, contract v4: read the last section of specs/lasso-frontend.md ("Contract version 4 additions"). Right-side Menu panel with Home, Wallet, Exchange, Rewards, Shops, Ranking, Analytics, Invite, About, Demo tools; every screen usable. Start with the panel and the screens that need no new backend. Report "F10: ...". Freeze 4:30.
+
+## Task F11 (16:01)
+Contract v5 (last section of specs/lasso-frontend.md): Store page with offers, Profile, Settings, full Ranking with ranks, Analytics ranks. Report by 4:40. Freeze 4:45.

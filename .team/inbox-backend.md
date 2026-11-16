@@ -7,3 +7,6 @@ Notes from LEAD: the owner already runs `npx convex dev` (it pushed cleanly, h3-
 
 ## Task B8 (15:16)
 Owner request, contract v4: read the last section of specs/lasso-backend.md ("Contract version 4 additions"). Push typed stubs within 5 min, then the logic and tests. Report "B8: ...". Freeze 4:30.
+
+## Task B10 (16:01)
+Contract v5 (last section of specs/lasso-backend.md): leaderboards return up to 50 rows. Freeze 4:45.
