@@ -216,3 +216,17 @@
 - Tests: new `convex/decay.test.ts` (4 tests: the formula and nextDropAt; decay to free (off the map, no shop holder, off the leaderboard, re-claim without an event); a smaller loop steals once the defender has decayed; an own loop refreshes and restarts the clock). I changed 2 kit tests in `lib/loop.test.ts` to the new rule (the blocked test now uses a fresh block; the own-cells test now expects refresh) and fixed my leaderboard test data (claimedAt now). tsc is clean and vitest passes 45/45.
 - Live check: `cells:all` returns `fadesAt`. The 7 blocks from the 17:13 Revyl capture test show strength 7.
 - Files to commit: convex/lib/config.ts, convex/lib/loop.ts, convex/lib/rules.ts, convex/lib/capture.ts, convex/cells.ts, convex/shops.ts, convex/leaderboard.ts, convex/stats.ts, convex/decay.test.ts (new), convex/lib/loop.test.ts, convex/leaderboard.test.ts, hackathon.md.
+
+## F14: block fade countdown (HACK-FRONTEND, 17:16)
+- `src/lib/format.ts`: `fadesText(fadesAt, now)`: "Fades in 23 min" / "Fades in 1 h 5 min" / "Fades in under a minute", "Fading now. Walk it again to keep it." once past, nothing when `fadesAt` is null (decay off).
+- `src/app/home.tsx`: target card when I hold the nearest shop shows the shop cell's fade line in gold under "Held for…"; the tap-a-block card shows the block's fade line (gold for my block, muted for others). Counts down client-side on Home's existing 30 s tick.
+- `src/app/about.tsx` already has "Blocks fade: they lose 1 strength every hour unless you walk them again." (F13).
+- No revyl label changed. root `npx tsc --noEmit` exit 0; iOS export builds. Frontend frozen from here.
+
+## HACK-BACKEND: demo map ready (17:16)
+- Deleted 14 test players with admin:deletePlayer: the 13 listed plus the "Ana" from the 17:13 Revyl capture run. Kept the owner's device d_1b174c... It is now named "Jack" (renamed in Profile; flag "Hi there"), and has 0 points.
+- admin:reset, then admin:demoSeed: { cells: 24, players: 3 }.
+- Holders: Happy Cow = Sam (strength 7, needs 8); Neighbor Bakehouse = Maya (11, needs 12); Piccino = Leo (7, needs 8); Humphry Slocombe is free (needs 6).
+- Points: Maya 569, Sam 521, Leo 521, Jack 0. 1 steal event in the feed (Maya took 1 block from Sam). 8 offers.
+- Decay: these blocks were claimed at 17:16, so they start losing 1 strength per hour from 18:16 (Sam's Happy Cow drops to 6 at 18:16).
+- Freeze: on call for fixes only.

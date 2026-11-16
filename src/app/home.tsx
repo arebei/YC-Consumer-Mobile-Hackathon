@@ -19,7 +19,7 @@ import { PlayerDot } from '../components/PlayerDot';
 import { ShopPin } from '../components/ShopPin';
 import { Skeleton } from '../components/Skeleton';
 import { useReconnecting } from '../lib/connection';
-import { blocks, formatDistance, formatHeld, pts } from '../lib/format';
+import { blocks, fadesText, formatDistance, formatHeld, pts } from '../lib/format';
 import { useReduceMotion } from '../lib/motion';
 import { usePlayer } from '../lib/player';
 import { useCurrentPosition } from '../lib/position';
@@ -145,6 +145,10 @@ export default function Home() {
         <>
           <Text style={[type.body, styles.text]}>{`You hold ${shop.name} with a ${shop.strength}-block loop.`}</Text>
           <Text style={[type.caption, styles.muted]}>{`Held for ${formatHeld(held)}`}</Text>
+          {(() => {
+            const fades = fadesText(cells?.find((c) => c.cellId === shop.cellId)?.fadesAt, now);
+            return fades ? <Text style={[type.caption, styles.reward]}>{fades}</Text> : null;
+          })()}
         </>
       );
     } else {
@@ -308,6 +312,11 @@ export default function Home() {
                 : `${cell.ownerName}'s block, held with a ${cell.strength}-block loop`}
             </Text>
             {cell.ownerFlag ? <FlagText flag={cell.ownerFlag} playerColor={cell.ownerColor} /> : null}
+            {fadesText(cell.fadesAt, now) ? (
+              <Text style={[type.caption, cell.ownerId === player.playerId ? styles.reward : styles.muted]}>
+                {fadesText(cell.fadesAt, now)}
+              </Text>
+            ) : null}
           </GlassCard>
         )}
 

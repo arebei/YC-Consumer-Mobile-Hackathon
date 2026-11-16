@@ -34,6 +34,14 @@ export function formatHeld(ms: number): string {
   return rest === 0 ? `${h} h` : `${h} h ${rest} min`;
 }
 
+/** "Fades in 23 min" from cells.all `fadesAt`; null when decay is off. Recompute on a timer. */
+export function fadesText(fadesAt: number | null | undefined, now: number): string | null {
+  if (fadesAt === null || fadesAt === undefined) return null;
+  const ms = fadesAt - now;
+  if (ms <= 0) return 'Fading now. Walk it again to keep it.';
+  return `Fades in ${formatHeld(ms)}`;
+}
+
 /** "$1.00" */
 export function formatFee(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
