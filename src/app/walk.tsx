@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from 'convex/react';
 import { ConvexError } from 'convex/values';
 import { useKeepAwake } from 'expo-keep-awake';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '../lib/haptics';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -20,6 +20,7 @@ import { StatNumber } from '../components/StatNumber';
 import { blocks, errorMessage, formatDistance } from '../lib/format';
 import { usePlayer } from '../lib/player';
 import { clearWalk, saveWalk, takePendingWalk } from '../lib/savedWalk';
+import { useSettings } from '../lib/settings';
 import { lastResult } from '../lib/store';
 import { color, radius, size, space, type } from '../theme';
 
@@ -59,6 +60,7 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 const toCoord = (p: { lat: number; lng: number }) => ({ latitude: p.lat, longitude: p.lng });
 
 export default function Walk() {
+  useSettings(); // re-render when distance units change
   useKeepAwake();
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -244,7 +246,7 @@ export default function Walk() {
     hud = (
       <>
         <Text style={[type.bodyStrong, styles.text]}>Lasso needs your location to record walks</Text>
-        <Button label="Open settings" variant="secondary" size="medium" onPress={() => Linking.openSettings()} />
+        <Button label="Open settings" variant="secondary" size="medium" onPress={() => Linking.openSettings().catch(() => {})} />
       </>
     );
   } else if (phase === 'confirm') {

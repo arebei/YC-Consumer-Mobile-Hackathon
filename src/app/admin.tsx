@@ -134,7 +134,7 @@ export default function Admin() {
         color: playerColors[newColor],
         ...(flag ? { flag } : {}),
       });
-      setPlayer({ playerId: res.playerId, name: res.name, color: res.color, flag: res.flag });
+      setPlayer({ playerId: res.playerId, name: res.name, color: res.color, flag: res.flag, joinId: `${deviceId}#${nickname}` });
       setShowAdd(false);
       setNewName('');
       setNewFlag('');

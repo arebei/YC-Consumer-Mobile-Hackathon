@@ -1,39 +1,34 @@
-import { useMutation, useQuery } from 'convex/react';
-import type { FunctionReturnType } from 'convex/server';
+import { useQuery } from 'convex/react';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { api } from '../../convex/_generated/api';
 import { haversineM } from '../../convex/lib/loop';
-import { Button } from '../components/Button';
-import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
 import { Store } from '../components/icons';
+import { OfferCard, type Offer } from '../components/OfferCard';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { Skeleton } from '../components/Skeleton';
-import { useToast } from '../components/Toast';
-import { errorMessage, formatDistance, pts } from '../lib/format';
+import { formatDistance, pts } from '../lib/format';
 import { usePlayer } from '../lib/player';
 import { useCurrentPosition } from '../lib/position';
+import { useSettings } from '../lib/settings';
 import { color, size, space, type } from '../theme';
 
-type Offer = FunctionReturnType<typeof api.offers.list>[number];
-
 export default function Exchange() {
+  useSettings(); // re-render when distance units change
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const toast = useToast();
   const { player } = usePlayer();
   const config = useQuery(api.config.public);
   const offers = useQuery(api.offers.list);
   const wallet = useQuery(api.wallet.mine, player ? { playerId: player.playerId } : 'skip');
-  const exchange = useMutation(api.offers.exchange);
   const { position } = useCurrentPosition(config?.center, config?.demoMode);
-  const [busy, setBusy] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  // offers.list is sorted by shop name, then cost: group consecutive offers by shop.
+  // offers.list is sorted by shop name, then cost: group by shop.
   const groups = useMemo(() => {
     const out: { shopId: string; shopName: string; distance: number | null; offers: Offer[] }[] = [];
     for (const o of offers ?? []) {
@@ -54,24 +49,6 @@ export default function Exchange() {
 
   const balance = wallet?.balance;
 
-  const buy = async (o: Offer) => {
-    if (!player) return;
-    setBusy(o.offerId);
-    try {
-      const res = await exchange({ playerId: player.playerId, offerId: o.offerId });
-      if (res.ok) {
-        toast.show('Voucher added to your wallet');
-        router.replace('/wallet');
-      } else {
-        toast.error(`You need ${o.cost - (balance ?? 0)} more points`);
-      }
-    } catch (e) {
-      toast.error(errorMessage(e));
-    } finally {
-      setBusy(null);
-    }
-  };
-
   return (
     <View style={styles.fill}>
       <ScreenHeader title="Exchange" />
@@ -90,31 +67,23 @@ export default function Exchange() {
         ) : (
           groups.map((g) => (
             <View key={g.shopId} style={styles.group}>
-              <Text style={[type.overline, styles.muted]}>
-                {g.distance === null ? g.shopName : `${g.shopName} · ${formatDistance(g.distance)}`}
-              </Text>
-              {g.offers.map((o) => {
-                const short = balance !== undefined && balance < o.cost ? o.cost - balance : 0;
-                return (
-                  <Card key={o.offerId} style={styles.card}>
-                    <View style={styles.row}>
-                      <View style={styles.grow}>
-                        <Text style={[type.bodyStrong, styles.text]}>{o.title}</Text>
-                        <Text style={[type.callout, styles.muted]}>{o.shopName}</Text>
-                      </View>
-                      <Text style={[type.title2, styles.accent, styles.tabular]}>{pts(o.cost)}</Text>
-                    </View>
-                    <Button
-                      label="Exchange"
-                      size="medium"
-                      onPress={() => buy(o)}
-                      loading={busy === o.offerId}
-                      disabled={balance === undefined || short > 0 || (busy !== null && busy !== o.offerId)}
-                    />
-                    {short > 0 && <Text style={[type.callout, styles.muted]}>{`You need ${short} more points`}</Text>}
-                  </Card>
-                );
-              })}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={g.shopName}
+                onPress={() => router.push({ pathname: '/store', params: { shopId: g.shopId } })}
+                style={({ pressed }) => [styles.groupHeader, pressed && styles.pressed]}>
+                <Store size={size.icon - space.sm} strokeWidth={size.iconStroke} color={color.reward} />
+                <Text style={[type.bodyStrong, styles.text, styles.grow]} numberOfLines={1}>
+                  {g.shopName}
+                </Text>
+                {g.distance !== null && (
+                  <Text style={[type.callout, styles.muted]}>{formatDistance(g.distance)}</Text>
+                )}
+                <Text style={[type.callout, styles.accent]}>View</Text>
+              </Pressable>
+              {g.offers.map((o) => (
+                <OfferCard key={o.offerId} offer={o} balance={balance} showShop={false} busyOther={busy} onBusy={setBusy} />
+              ))}
             </View>
           ))
         )}
@@ -127,11 +96,10 @@ const styles = StyleSheet.create({
   fill: { flex: 1, backgroundColor: color.bg },
   content: { paddingHorizontal: space.lg, gap: space.lg },
   group: { gap: space.sm },
-  card: { gap: space.md },
-  row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  groupHeader: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.xs },
+  pressed: { opacity: 0.6 },
   grow: { flex: 1 },
   text: { color: color.text },
   muted: { color: color.textMuted },
   accent: { color: color.accent },
-  tabular: { fontVariant: ['tabular-nums'] },
 });

@@ -8,6 +8,8 @@ export type ActivePlayer = {
   name: string;
   color: string;
   flag: string | null;
+  /** The deviceId this player joined with (test players use "<deviceId>#<name>"), for profile edits. */
+  joinId?: string;
 };
 
 type PlayerCtx = {

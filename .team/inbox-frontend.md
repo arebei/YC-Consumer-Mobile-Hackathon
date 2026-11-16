@@ -10,3 +10,6 @@ Owner request, contract v4: read the last section of specs/lasso-frontend.md ("C
 
 ## Task F11 (16:01)
 Contract v5 (last section of specs/lasso-frontend.md): Store page with offers, Profile, Settings, full Ranking with ranks, Analytics ranks. Report by 4:40. Freeze 4:45.
+
+## Task F12 (16:27, new LEAD session)
+F11 received; LEAD is committing it. Freeze 4:45: no new features. Report any label change that affects revyl/*.yaml; otherwise fix bugs only.

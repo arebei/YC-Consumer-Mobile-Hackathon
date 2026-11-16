@@ -23,6 +23,7 @@ import { blocks, formatDistance, formatHeld, pts } from '../lib/format';
 import { useReduceMotion } from '../lib/motion';
 import { usePlayer } from '../lib/player';
 import { useCurrentPosition } from '../lib/position';
+import { useSettings } from '../lib/settings';
 import { clearWalk, loadWalk, setPendingWalk, type SavedWalk } from '../lib/savedWalk';
 import { stealParts, useStealBanner } from '../lib/stealBanner';
 import { color, radius, size, space, type } from '../theme';
@@ -33,6 +34,7 @@ const HELD_REFRESH_MS = 30000;
 const PULSE_MS = 350;
 
 export default function Home() {
+  useSettings(); // re-render when distance units change
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const reduceMotion = useReduceMotion();
@@ -80,7 +82,7 @@ export default function Home() {
       return;
     }
     if (me.name !== player.name || me.color !== player.color || me.flag !== player.flag) {
-      setPlayer({ playerId: me.playerId, name: me.name, color: me.color, flag: me.flag });
+      setPlayer({ ...player, name: me.name, color: me.color, flag: me.flag });
     }
   }, [player, players, setPlayer]);
 
@@ -183,7 +185,14 @@ export default function Home() {
           onMapPress={() => setSelectedCell(null)}
           grid={grid}>
           {shops?.map((s) => (
-            <ShopPin key={s.shopId} lat={s.lat} lng={s.lng} name={s.name} mine={s.holderId === player.playerId} />
+            <ShopPin
+              key={s.shopId}
+              lat={s.lat}
+              lng={s.lng}
+              name={s.name}
+              mine={s.holderId === player.playerId}
+              onPress={() => router.push({ pathname: '/store', params: { shopId: s.shopId } })}
+            />
           ))}
         </LassoMap>
       ) : (
@@ -305,7 +314,7 @@ export default function Home() {
         {needsPermission ? (
           <GlassCard style={styles.card}>
             <Text style={[type.bodyStrong, styles.text]}>Lasso needs your location to record walks</Text>
-            <Button label="Open settings" variant="secondary" size="medium" onPress={() => Linking.openSettings()} />
+            <Button label="Open settings" variant="secondary" size="medium" onPress={() => Linking.openSettings().catch(() => {})} />
           </GlassCard>
         ) : (
           <GlassCard style={styles.card}>

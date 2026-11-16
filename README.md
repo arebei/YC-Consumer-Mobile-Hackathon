@@ -24,6 +24,8 @@ People who know they should walk more and find exercise boring. Lasso gives them
 4. A rival takes a block only with a loop of more blocks than its strength. A shop's block needs a loop of at least 6 blocks.
 5. When the week ends, the longest holder of each shop gets a code to redeem at the counter, and the shop is invoiced a small fee through Whop.
 6. Only walking and running count. Loops covered faster than a run are rejected.
+7. Every walk earns points. Spend them in **Exchange** (or on a shop's **Store** page) on vouchers from the local shops, kept in your **Wallet** and used at the counter.
+8. The **Menu** (top right) holds Profile, Wallet, Exchange, Rewards, Shops, Ranking (top 50 by points or blocks, with your rank), Analytics (7-day walking chart), Invite (QR), Settings (miles/metres, haptics, reduce motion) and About.
 
 Today's blocks are demo-sized (about 50 m across): a loop of roughly 500 m takes a shop. The shops are real places near YC; the rewards are samples the team made up, and no shop has signed up yet.
 
@@ -31,8 +33,8 @@ Today's blocks are demo-sized (about 50 m across): a loop of roughly 500 m takes
 
 | Tool | What it does in Lasso | Evidence |
 |---|---|---|
-| **Convex** | The whole backend: database, every game rule, live updates to every phone and the big screen, and the scheduler that calls Whop. `walks.submit` is one transaction, so two phones racing for a block can never both own it. Map grid: H3 hexagons running inside Convex functions. | `convex/`, 34 tests (`npx vitest run`) |
-| **Capy** | Cloud coding agents, driven through the Capy API. One thread built the big-screen live map in `screen/` as a pull request; another built the iOS app on Revyl, ran the smoke tests and turned on Revyl proof of changes. | [PR #1](https://github.com/azizjonrahimov/YC-Consumer-Mobile-Hackathon/pull/1) (big screen), [PR #2](https://github.com/azizjonrahimov/YC-Consumer-Mobile-Hackathon/pull/2) (Revyl proof of changes) |
+| **Convex** | The whole backend: database, every game rule, live updates to every phone and the big screen, and the scheduler that calls Whop. `walks.submit` is one transaction, so two phones racing for a block can never both own it. Map grid: H3 hexagons running inside Convex functions. | `convex/`, 41 tests (`npx vitest run`) |
+| **Capy** | Cloud coding agents, driven through the Capy API. Threads built the big-screen live map in `screen/`, the iOS app on Revyl (smoke tests plus Revyl proof of changes on PRs), the public website, and a playable web version of Lasso with a Leaflet map. | [PR #1](https://github.com/azizjonrahimov/YC-Consumer-Mobile-Hackathon/pull/1) (big screen), [PR #2](https://github.com/azizjonrahimov/YC-Consumer-Mobile-Hackathon/pull/2) (Revyl proof of changes), [PR #3](https://github.com/azizjonrahimov/YC-Consumer-Mobile-Hackathon/pull/3) (website), [PR #4](https://github.com/azizjonrahimov/YC-Consumer-Mobile-Hackathon/pull/4) (play in the browser) |
 | **Revyl** | The app built for the iOS simulator and run on a cloud iPhone 16, checked by three plain-English tests in `revyl/`: capture, steal and reward. | [lasso-capture report](https://app.revyl.ai/tests/report?token=2903123c-f791-45a8-9e96-37b03be6db72) (8/8 passed); steal 9/9 steps; reward 12/12 |
 | **Whop** | The business model. When a reward is redeemed, Convex creates a $1.00 invoice for the shop in Whop's sandbox and follows it until it is paid. No real money moves. | `convex/payments.ts`; sandbox invoice `pay_VMhcQG436HwYZF` |
 
@@ -44,17 +46,17 @@ The full build log with times and links is in [`hackathon.md`](hackathon.md).
 npm install
 npx convex dev                         # backend; writes EXPO_PUBLIC_CONVEX_URL to .env.local
 npx expo start --go --tunnel ngrok     # scan with Expo Go on a phone
-npx vitest run                         # 34 tests
+npx vitest run                         # 41 tests
 cd screen && npm install && npm run dev   # big-screen live map (copy .env.example to .env)
 ```
 
-Indoors or on a cloud device without GPS, the app uses the venue as its position: open **Demo tools** and use **Fake loop: small** / **Fake loop: large** or **Replay last walk**.
+Indoors or on a cloud device without GPS, the app uses the venue as its position: open **Menu > Demo tools** and use **Fake loop: small** / **Fake loop: large** or **Replay last walk**.
 
 ## Repo map
 
 | Path | What |
 |---|---|
-| `src/app/` | Expo Router screens: Join, Home (map), Walk, Result, Shops, Demo tools |
+| `src/app/` | Expo Router screens: Join, Home (map), Walk, Result, Shops, Store, Wallet, Exchange, Rewards, Ranking, Analytics, Profile, Settings, Invite, About, Demo tools |
 | `src/components/`, `src/theme.ts` | "Night map" design system |
 | `convex/` | Schema, functions, Whop payments; pure game rules in `convex/lib/` |
 | `screen/` | Big-screen live map for a projector (built by Capy) |

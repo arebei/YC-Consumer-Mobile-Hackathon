@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from './haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { FunctionReturnType } from 'convex/server';

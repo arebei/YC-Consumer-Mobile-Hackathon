@@ -1,6 +1,6 @@
 import { useRouter, type Href } from 'expo-router';
 import { useEffect, useRef, type ComponentType } from 'react';
-import { Animated, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useReduceMotion } from '../lib/motion';
@@ -12,9 +12,11 @@ import {
   House,
   Info,
   Medal,
+  Settings,
   Store,
   Trophy,
   UserPlus,
+  UserRound,
   Wallet,
   Wrench,
 } from './icons';
@@ -24,6 +26,7 @@ type Row = { label: string; icon: IconType; href: Href | null };
 
 const ROWS: Row[] = [
   { label: 'Home', icon: House, href: null },
+  { label: 'Profile', icon: UserRound, href: '/profile' },
   { label: 'Wallet', icon: Wallet, href: '/wallet' },
   { label: 'Exchange', icon: ArrowLeftRight, href: '/exchange' },
   { label: 'Rewards', icon: Trophy, href: '/rewards' },
@@ -31,12 +34,14 @@ const ROWS: Row[] = [
   { label: 'Ranking', icon: Medal, href: '/ranking' },
   { label: 'Analytics', icon: ChartColumn, href: '/analytics' },
   { label: 'Invite', icon: UserPlus, href: '/invite' },
+  { label: 'Settings', icon: Settings, href: '/settings' },
   { label: 'About', icon: Info, href: '/about' },
   { label: 'Demo tools', icon: Wrench, href: '/admin' },
 ];
 
 const SLIDE_MS = 220;
 const DISMISS_MS = 250;
+const IOS_FALLBACK_MS = 600;
 
 /** Right-side menu that slides in over a scrim. "Home" just closes it. */
 export function MenuPanel({ visible, onClose }: { visible: boolean; onClose: () => void }) {
@@ -67,7 +72,8 @@ export function MenuPanel({ visible, onClose }: { visible: boolean; onClose: () 
   const go = (href: Href | null) => {
     pending.current = href;
     onClose();
-    if (Platform.OS !== 'ios') setTimeout(flush, DISMISS_MS);
+    // onDismiss flushes first on iOS; this fallback covers Android, web, and an iOS onDismiss that never fires.
+    setTimeout(flush, Platform.OS === 'ios' ? IOS_FALLBACK_MS : DISMISS_MS);
   };
 
   return (
@@ -87,6 +93,7 @@ export function MenuPanel({ visible, onClose }: { visible: boolean; onClose: () 
           <Text style={[type.title1, styles.text]}>Menu</Text>
           <CloseButton onPress={onClose} />
         </View>
+        <ScrollView contentContainerStyle={styles.rows} showsVerticalScrollIndicator={false}>
         {ROWS.map(({ label, icon: Icon, href }) => (
           <Pressable
             key={label}
@@ -98,6 +105,7 @@ export function MenuPanel({ visible, onClose }: { visible: boolean; onClose: () 
             <Text style={[type.bodyStrong, styles.text]}>{label}</Text>
           </Pressable>
         ))}
+        </ScrollView>
       </Animated.View>
     </Modal>
   );
@@ -132,5 +140,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   rowPressed: { backgroundColor: color.surface },
+  rows: { gap: space.xxs },
   text: { color: color.text },
 });

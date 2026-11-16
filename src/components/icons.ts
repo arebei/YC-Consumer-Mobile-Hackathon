@@ -15,3 +15,5 @@ export { default as ChartColumn } from 'lucide-react-native/icons/chart-column';
 export { default as UserPlus } from 'lucide-react-native/icons/user-plus';
 export { default as Info } from 'lucide-react-native/icons/info';
 export { default as Ticket } from 'lucide-react-native/icons/ticket';
+export { default as Settings } from 'lucide-react-native/icons/settings';
+export { default as UserRound } from 'lucide-react-native/icons/user-round';

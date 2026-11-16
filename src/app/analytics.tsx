@@ -11,6 +11,8 @@ import { Skeleton } from '../components/Skeleton';
 import { StatNumber } from '../components/StatNumber';
 import { blocks, formatDistance, timeAgo } from '../lib/format';
 import { usePlayer } from '../lib/player';
+import { myRank } from '../lib/rank';
+import { useSettings } from '../lib/settings';
 import { color, font, size, space, type } from '../theme';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -82,9 +84,15 @@ function WeekChart({ recent }: { recent: Walk[] }) {
 const STATUS: Record<string, string> = { captured: 'Captured', rejected: 'Did not count' };
 
 export default function Analytics() {
+  useSettings();
   const insets = useSafeAreaInsets();
   const { player } = usePlayer();
   const stats = useQuery(api.stats.mine, player ? { playerId: player.playerId } : 'skip');
+  const byPoints = useQuery(api.leaderboard.points);
+  const byBlocks = useQuery(api.leaderboard.top);
+  const pointsRank = myRank(byPoints, (r) => r.points, player?.playerId);
+  const blocksRank = myRank(byBlocks, (r) => r.blocks, player?.playerId);
+  const rankText = (r: number | null | undefined) => (r === undefined ? '…' : r === null ? '–' : `#${r}`);
 
   return (
     <View style={styles.fill}>
@@ -109,6 +117,12 @@ export default function Analytics() {
               </Card>
               <Card style={styles.tile}>
                 <StatNumber value={formatDistance(stats.totalM)} label="Distance" />
+              </Card>
+              <Card style={styles.tile}>
+                <StatNumber value={rankText(pointsRank)} label="Rank by points" valueColor={color.accent} />
+              </Card>
+              <Card style={styles.tile}>
+                <StatNumber value={rankText(blocksRank)} label="Rank by blocks" />
               </Card>
             </View>
 

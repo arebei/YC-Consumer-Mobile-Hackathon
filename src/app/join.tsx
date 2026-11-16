@@ -42,7 +42,7 @@ export default function Join() {
         color: playerColors[pick],
         ...(trimmedFlag ? { flag: trimmedFlag } : {}),
       });
-      setPlayer({ playerId: res.playerId, name: res.name, color: res.color, flag: res.flag });
+      setPlayer({ playerId: res.playerId, name: res.name, color: res.color, flag: res.flag, joinId: deviceId });
       await requestLocationPermission();
       router.replace('/home');
     } catch (e) {

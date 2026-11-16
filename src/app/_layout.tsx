@@ -15,9 +15,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ToastProvider } from '../components/Toast';
 import { PlayerProvider } from '../lib/player';
+import { loadSettings } from '../lib/settings';
 import { color, space, type } from '../theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+loadSettings();
 
 const CONVEX_URL = process.env.EXPO_PUBLIC_CONVEX_URL;
 const convex = CONVEX_URL ? new ConvexReactClient(CONVEX_URL, { unsavedChangesWarning: false }) : null;

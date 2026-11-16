@@ -6,34 +6,39 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api } from '../../convex/_generated/api';
 import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
+import { GlassCard } from '../components/GlassCard';
 import { Medal } from '../components/icons';
 import { PlayerDot } from '../components/PlayerDot';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { Skeleton } from '../components/Skeleton';
 import { blocks, pts } from '../lib/format';
 import { usePlayer } from '../lib/player';
+import { withRanks } from '../lib/rank';
 import { color, radius, size, space, type } from '../theme';
 
 type Tab = 'blocks' | 'points';
-type Row = { playerId: string; name: string; color: string; value: string };
+type Row = { playerId: string; name: string; color: string; score: number; value: string };
 
 export default function Ranking() {
   const insets = useSafeAreaInsets();
   const { player } = usePlayer();
-  const [tab, setTab] = useState<Tab>('blocks');
+  const [tab, setTab] = useState<Tab>('points');
   const byBlocks = useQuery(api.leaderboard.top);
   const byPoints = useQuery(api.leaderboard.points);
 
-  const rows: Row[] | undefined =
+  const source: Row[] | undefined =
     tab === 'blocks'
-      ? byBlocks?.map((r) => ({ playerId: r.playerId, name: r.name, color: r.color, value: blocks(r.blocks) }))
-      : byPoints?.map((r) => ({ playerId: r.playerId, name: r.name, color: r.color, value: pts(r.points) }));
+      ? byBlocks?.map((r) => ({ playerId: r.playerId, name: r.name, color: r.color, score: r.blocks, value: blocks(r.blocks) }))
+      : byPoints?.map((r) => ({ playerId: r.playerId, name: r.name, color: r.color, score: r.points, value: pts(r.points) }));
+  const rows = source ? withRanks(source, (r) => r.score) : undefined;
+  const me = rows?.find((r) => r.playerId === player?.playerId);
+  const by = tab === 'blocks' ? 'blocks' : 'points';
 
   return (
     <View style={styles.fill}>
       <ScreenHeader title="Ranking" />
       <View style={styles.tabs}>
-        {(['blocks', 'points'] as const).map((t) => (
+        {(['points', 'blocks'] as const).map((t) => (
           <Pressable
             key={t}
             accessibilityRole="tab"
@@ -47,6 +52,25 @@ export default function Ranking() {
           </Pressable>
         ))}
       </View>
+
+      {/* Pinned "Your rank" card */}
+      <View style={styles.pinned}>
+        <GlassCard style={styles.yourRank}>
+          <Text style={[type.overline, styles.muted]}>Your rank</Text>
+          {rows === undefined ? (
+            <Skeleton height={28} />
+          ) : me ? (
+            <View style={styles.yourRow}>
+              <Text style={[type.title1, styles.accent, styles.tabular]}>{`#${me.rank}`}</Text>
+              <Text style={[type.body, styles.text, styles.grow]}>{`of ${rows.length} by ${by}`}</Text>
+              <Text style={[type.bodyStrong, styles.text, styles.tabular]}>{me.value}</Text>
+            </View>
+          ) : (
+            <Text style={[type.bodyStrong, styles.text]}>Not ranked yet</Text>
+          )}
+        </GlassCard>
+      </View>
+
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + space.xxl }]}>
         {rows === undefined ? (
           <Skeleton height={200} />
@@ -58,16 +82,16 @@ export default function Ranking() {
           />
         ) : (
           <Card style={styles.card}>
-            {rows.map((r, i) => {
-              const me = r.playerId === player?.playerId;
+            {rows.map((r) => {
+              const mine = r.playerId === player?.playerId;
               return (
-                <View key={r.playerId} style={[styles.row, me && styles.rowMe]}>
-                  <Text style={[type.title2, styles.rank, i === 0 ? styles.reward : styles.muted]}>{i + 1}</Text>
+                <View key={r.playerId} style={[styles.row, mine && styles.rowMe]}>
+                  <Text style={[type.title2, styles.rank, r.rank === 1 ? styles.reward : styles.muted]}>{r.rank}</Text>
                   <PlayerDot playerColor={r.color} />
                   <Text style={[type.bodyStrong, styles.text, styles.grow]} numberOfLines={1}>
-                    {me ? `${r.name} (you)` : r.name}
+                    {mine ? `${r.name} (you)` : r.name}
                   </Text>
-                  <Text style={[type.bodyStrong, me ? styles.accent : styles.text, styles.tabular]}>{r.value}</Text>
+                  <Text style={[type.bodyStrong, mine ? styles.accent : styles.text, styles.tabular]}>{r.value}</Text>
                 </View>
               );
             })}
@@ -91,6 +115,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabOn: { backgroundColor: color.accent, borderColor: color.accent },
+  pinned: { paddingHorizontal: space.lg, paddingBottom: space.md },
+  yourRank: { gap: space.xs },
+  yourRow: { flexDirection: 'row', alignItems: 'baseline', gap: space.sm },
   content: { paddingHorizontal: space.lg, gap: space.md },
   card: { gap: space.xs, padding: space.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderRadius: radius.md },

@@ -1,4 +1,4 @@
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '../lib/haptics';
 import { useRef } from 'react';
 import {
   ActivityIndicator,

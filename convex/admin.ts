@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { mutation, type MutationCtx } from "./_generated/server";
+import { internalMutation, mutation, type MutationCtx } from "./_generated/server";
 import { cellOf } from "./lib/grid";
 import { addPoints } from "./lib/ledger";
 import { captureWalk } from "./lib/capture";
@@ -95,5 +95,27 @@ export const demoSeed = mutation({
       players++;
     }
     return { players, cells: (await ctx.db.query("cells").collect()).length };
+  },
+});
+
+/** Ops only (internal, not callable from the app): remove one player and everything that points at them. */
+export const deletePlayer = internalMutation({
+  args: { deviceId: v.string() },
+  handler: async (ctx, { deviceId }): Promise<{ deleted: boolean; rows: number }> => {
+    const player = await ctx.db.query("players").withIndex("by_deviceId", (q) => q.eq("deviceId", deviceId)).unique();
+    if (!player) return { deleted: false, rows: 0 };
+    const id = player._id;
+    const docs = [
+      ...(await ctx.db.query("cells").withIndex("by_ownerId", (q) => q.eq("ownerId", id)).collect()),
+      ...(await ctx.db.query("walks").withIndex("by_playerId", (q) => q.eq("playerId", id)).collect()),
+      ...(await ctx.db.query("ledger").withIndex("by_playerId", (q) => q.eq("playerId", id)).collect()),
+      ...(await ctx.db.query("vouchers").withIndex("by_playerId", (q) => q.eq("playerId", id)).collect()),
+      ...(await ctx.db.query("rewards").withIndex("by_playerId", (q) => q.eq("playerId", id)).collect()),
+      ...(await ctx.db.query("shopHolds").collect()).filter((h) => h.playerId === id),
+      ...(await ctx.db.query("events").collect()).filter((e) => e.byPlayerId === id || e.fromPlayerId === id),
+    ];
+    for (const d of docs) await ctx.db.delete(d._id);
+    await ctx.db.delete(id);
+    return { deleted: true, rows: docs.length };
   },
 });

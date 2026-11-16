@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { AccessibilityInfo, Animated, Easing, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
+import { getSettings } from '../lib/settings';
 import { color, radius } from '../theme';
 
 const SWEEP_MS = 1200;
@@ -15,7 +16,7 @@ export function Skeleton({ style, height = 20 }: { style?: StyleProp<ViewStyle>;
     AccessibilityInfo.isReduceMotionEnabled()
       .catch(() => false)
       .then((reduce) => {
-        if (cancelled || reduce) return;
+        if (cancelled || reduce || getSettings().reduceMotion) return;
         loop = Animated.loop(
           Animated.timing(t, { toValue: 1, duration: SWEEP_MS, easing: Easing.linear, useNativeDriver: true }),
         );

@@ -170,3 +170,23 @@
 - `leaderboard.top` and `leaderboard.points` now return at most 50 rows, with the same shapes. The limit is `LEADERBOARD_LIMIT = 50` in `convex/lib/config.ts`.
 - New `convex/leaderboard.test.ts`: one test each (55 players, so exactly 50 rows come back, ordered most first, with the right first and 50th rows). tsc is clean and vitest passes 41/41.
 - Files to commit: convex/lib/config.ts, convex/leaderboard.ts, convex/leaderboard.test.ts.
+
+## F11: Store page, Profile, Settings, full Ranking, Analytics ranks (HACK-FRONTEND, 16:11)
+- Store page `src/app/store.tsx?shopId=`: reward, distance, holder line, "Enclose N to take it" (or "You hold it with a 7-block loop."), then "Offers" for that shop with "300 pts" and "Exchange" (shared `OfferCard`: same rules and messages as Exchange, "You need N more points" when short, success toast + Wallet). Opened from a shop pin tap on Home (`ShopPin` now takes `onPress` on the Marker), a shop card tap in Shops, and the shop header ("<shop> · 300 m · View") in Exchange.
+- Profile (Menu row 2): dot, name, flag, "Edit profile" (Nickname, colour swatches, "Your flag", "Save" / "Cancel") via `players.join` with the same id, plus `players.setFlag` when the flag changed; stats tiles (points, blocks held, walks, distance); "#4 of 12 by points" / "#2 of 9 by blocks" or "By points: Not ranked yet". The active player now remembers the id it joined with, so editing a demo test player edits that player and not the device's own.
+- Settings (Menu row before About): "Distance units" Metres / Miles (AsyncStorage; every distance on screen follows: "500 ft" under 0.1 mi, else "0.4 mi"), "Haptics" (all haptics go through `src/lib/haptics.ts`, silenced when off), "Reduce motion" (combined with the system setting everywhere, including Skeleton), "Location permission" status + "Open settings", "Sign out on this device" with confirm "Sign out" / "Cancel" (clears the stored player only, back to Join), "About Lasso".
+- Ranking: every row returned (up to 50) numbered with competition ranking (ties share the lower number), "Points" tab first, my row highlighted, pinned "YOUR RANK" glass card "#4 of 12 by points" or "Not ranked yet".
+- Analytics: "Rank by points" and "Rank by blocks" StatNumbers.
+- Menu: 12 rows now, scrollable on small phones.
+- Web: no new native modules (Switch, Share, Modal, expo-location are all fine on web); `Linking.openSettings()` calls now catch, since browsers do not implement it.
+- Checked: `npx tsc --noEmit` clean for every file I own; iOS export builds (3.4 MB). Nothing cut. Not run on a device.
+- **LEAD:** root tsc currently fails only in Capy's `src/components/LassoMap.web.tsx` and `maps.web.tsx`: `leaflet` / `react-leaflet` / `@types/react-dom` aren't installed in this checkout. Run `npm install` after the web PR (and add `@types/react-dom` + `@types/leaflet` as dev deps if they're missing from package.json).
+
+## HACK-BACKEND: hackathon.md: 15:37-16:45 entries
+- Timeline: 15:37 PR #3 (`b65db72`), 15:55 PR #4 (`23ecdb4`), 16:03 contract v5, 16:04 B10 (`b7c130c`), 16:27 F11, 16:45 freeze. The Capy section now has the PR #3 and #4 merge hashes. No email in the file. File to commit: hackathon.md.
+- Known open items: (1) the Whop invoice cannot be issued until the owner verifies the Whop sandbox business; (2) the test player "Backend Test" (deviceId `backend-live-test`) is still on the live deployment, because reset keeps players, so it will appear in leaderboard.points with 0 points; (3) demoSeed has not been run live yet (the Lead runs reset + demoSeed after the freeze).
+
+## F11 fix: Menu navigation fallback (HACK-FRONTEND, 16:27)
+- `MenuPanel` opened the next screen only from the iOS Modal `onDismiss` event. If that event ever fails to fire, "Menu" > "Demo tools" would do nothing and every revyl/*.yaml test would stall. It now also navigates from a 600 ms fallback timer; whichever runs first clears the pending route, so it never navigates twice.
+- Checked revyl/*.yaml against the current labels: all steps match (Nickname, colour circles, Start, Start walk, Menu, Demo tools, Fake loop: small/large, Around: Happy Cow Creamery & Tea, Seed venue shops, End the week, Demo redeem, Shops, YOUR REWARDS, Redeem, Redeemed., Add test player, Acting as, Switch player, Back to map, You claimed, BLOCKS CLAIMED, were taken from other players, Sam took). No label changes since F10.
+- root `npx tsc --noEmit` exit 0; iOS export builds.

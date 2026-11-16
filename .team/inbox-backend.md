@@ -10,3 +10,6 @@ Owner request, contract v4: read the last section of specs/lasso-backend.md ("Co
 
 ## Task B10 (16:01)
 Contract v5 (last section of specs/lasso-backend.md): leaderboards return up to 50 rows. Freeze 4:45.
+
+## Task B11 (16:27, new LEAD session)
+Freeze 4:45: fixes only after that. Stay on call. Add the 16:00-16:45 entries (contract v5, B10, F11) to hackathon.md and report.

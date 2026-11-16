@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from 'convex/react';
 import type { FunctionReturnType } from 'convex/server';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '../lib/haptics';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -26,6 +26,7 @@ import { color, size, space, type } from '../theme';
 type Shop = FunctionReturnType<typeof api.shops.list>[number];
 
 function ShopCard({ shop, now }: { shop: Shop; now: number }) {
+  const router = useRouter();
   const rows = shop.top.map((t) => ({ ...t }));
   if (shop.holderId && shop.holderName && shop.holderColor) {
     const live = shop.holderSince ? Math.max(0, now - shop.holderSince) : 0;
@@ -36,6 +37,11 @@ function ShopCard({ shop, now }: { shop: Shop; now: number }) {
   rows.sort((a, b) => b.heldMs - a.heldMs);
 
   return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={shop.name}
+      onPress={() => router.push({ pathname: '/store', params: { shopId: shop.shopId } })}
+      style={({ pressed }) => [pressed && styles.pressed]}>
     <Card style={styles.cardGap}>
       <Text style={[type.title2, styles.text]}>{shop.name}</Text>
       <Text style={[type.bodyStrong, styles.reward]}>{shop.reward}</Text>
@@ -53,6 +59,7 @@ function ShopCard({ shop, now }: { shop: Shop; now: number }) {
         </View>
       ))}
     </Card>
+    </Pressable>
   );
 }
 
@@ -149,6 +156,7 @@ const styles = StyleSheet.create({
   cardGap: { gap: space.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   grow: { flex: 1 },
+  pressed: { opacity: 0.7 },
   rank: { minWidth: space.lg },
   text: { color: color.text },
   muted: { color: color.textMuted },

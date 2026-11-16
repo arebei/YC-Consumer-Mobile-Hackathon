@@ -1,4 +1,4 @@
-import * as Haptics from 'expo-haptics';
+import { Haptics } from './haptics';
 import { useEffect, useRef, useState } from 'react';
 
 const TOTAL_MS = 800;

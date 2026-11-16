@@ -1,6 +1,6 @@
 import { useMutation } from 'convex/react';
 import type { FunctionReturnType } from 'convex/server';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '../lib/haptics';
 import { useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 

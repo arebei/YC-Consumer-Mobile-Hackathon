@@ -1,5 +1,7 @@
 import { ConvexError } from 'convex/values';
 
+import { getSettings } from './settings';
+
 export const GENERIC_ERROR = 'Something went wrong. Try again.';
 
 /** The plain sentence from a ConvexError, or the generic sentence for anything else. */
@@ -11,8 +13,13 @@ export function errorMessage(e: unknown): string {
   return GENERIC_ERROR;
 }
 
-/** "300 m" under 1 km, "1.2 km" above. */
+/** Metres: "300 m" / "1.2 km". Miles (Settings): "500 ft" under 0.1 mi, else "0.4 mi". */
 export function formatDistance(m: number): string {
+  if (getSettings().units === 'miles') {
+    const mi = m / 1609.344;
+    if (mi < 0.1) return `${Math.round(m * 3.28084)} ft`;
+    return `${mi.toFixed(1)} mi`;
+  }
   if (m < 1000) return `${Math.round(m)} m`;
   return `${(m / 1000).toFixed(1)} km`;
 }
