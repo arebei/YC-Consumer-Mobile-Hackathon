@@ -126,12 +126,6 @@
   /* Points + wallet */
   .split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(20px,4vw,56px);align-items:center}
   @media (max-width:900px){.split{grid-template-columns:minmax(0,1fr)}}
-  .rates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .rate{padding:16px 18px;border-radius:16px;background:rgba(21,21,28,.8);border:1px solid var(--border)}
-  .rate b{display:block;font:700 28px/1.1 var(--display);color:var(--accent);margin-bottom:4px}
-  .rate span{font-size:14.5px;color:var(--body-text)}
-  .eg{font-size:15px;color:var(--muted)}
-  .eg strong{color:var(--text);font-weight:600}
   .flow{display:flex;flex-direction:column;gap:14px;counter-reset:f}
   .flow li{display:flex;gap:14px;align-items:flex-start}
   .flow li::before{counter-increment:f;content:counter(f);flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 14px/1 var(--display);background:var(--elevated);border:1px solid var(--border-strong);color:var(--text)}
@@ -183,24 +177,6 @@
   .soon{font-size:13.5px;color:var(--faint)}
   .soon b{color:var(--body-text);font-weight:600}
 
-  /* Built with */
-  .stack{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-  @media (max-width:1060px){.stack{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media (max-width:560px){.stack{grid-template-columns:minmax(0,1fr)}}
-  .stack li{display:flex;flex-direction:column;gap:8px;padding:22px}
-  .stack h3{font-size:22px}
-  .stack .role{font:600 12px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
-  .stack p{font-size:15.5px}
-
-  /* FAQ */
-  .faq{display:flex;flex-direction:column;gap:10px;max-width:820px}
-  .faq details{border-radius:16px;background:var(--panel);border:1px solid var(--border);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
-  .faq summary{list-style:none;cursor:pointer;padding:18px 56px 18px 20px;position:relative;font:600 17px/1.35 var(--body);border-radius:16px;min-height:48px}
-  .faq summary::-webkit-details-marker{display:none}
-  .faq summary::after{content:"";position:absolute;right:22px;top:50%;width:10px;height:10px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:translateY(-70%) rotate(45deg);transition:transform .15s ease}
-  .faq details[open] summary::after{transform:translateY(-30%) rotate(-135deg)}
-  .faq details p{padding:0 20px 18px;color:var(--body-text)}
-
   footer{position:relative;z-index:3;padding:32px var(--pad) calc(36px + env(safe-area-inset-bottom));color:var(--muted);font-size:14px;border-top:1px solid var(--border);background:rgba(7,7,10,.9)}
   footer .wrap{flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 24px}
   footer a{color:var(--text);text-underline-offset:3px;display:inline-flex;align-items:center;gap:8px;min-height:44px}
@@ -229,8 +205,6 @@
     <a href="#points">Points</a>
     <a href="#shops">For shops</a>
     <a href="#get">Get the app</a>
-    <a href="#built">Built with</a>
-    <a href="#faq">FAQ</a>
   </nav>
   <div class="cta">
     <a class="btn primary small" href="#get">Get the app</a>
@@ -243,12 +217,11 @@
       <div class="copy">
         <p class="over">A walking game for your neighbourhood</p>
         <h1 id="hero-title">Walk a loop. Own the blocks inside it.</h1>
-        <p class="lede">Lasso turns the streets around you into a game against the people who live there. Steal blocks with bigger loops, earn points as you walk, and spend them at the shops on your street.</p>
+        <p class="lede">Your neighbourhood is the game board. Claim your streets, steal them from your neighbours, and win real rewards from the cafés and shops around the corner.</p>
         <div class="row">
-          <a class="btn primary" href="./app/"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5Z"/></svg>Play in your browser</a>
-          <a class="btn ghost" href="https://app.revyl.ai/tests/report?token=2903123c-f791-45a8-9e96-37b03be6db72" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>Watch it run on a cloud iPhone (Revyl)</a>
+          <a class="btn primary" href="./app/"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5Z"/></svg>Play now</a>
+          <a class="btn ghost" href="#native"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>Get it on your phone</a>
         </div>
-        <a class="textlink" href="#native">Full native app in Expo Go</a>
       </div>
     </div>
     <div class="hint" aria-hidden="true">Scroll<span></span></div>
@@ -258,33 +231,32 @@
     <div class="wrap">
       <div class="copy panel">
         <p class="over"><b>01</b>How it works</p>
-        <h2 id="how-title">Four steps from a walk to a free coffee.</h2>
-        <p>The map is split into hexagonal blocks about 50 m across. Everyone who has the app plays on the same map.</p>
+        <h2 id="how-title">From a walk to a reward at your local shop.</h2>
       </div>
       <ol class="steps">
         <li class="step panel">
           <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4.8 0 8.5 3.1 8.5 7.3 0 4.1-3.6 7.2-8.5 7.2s-8.5-3.1-8.5-7.2C3.5 6.1 7.2 3 12 3Z" stroke-dasharray="3 3"/><circle cx="12" cy="17.5" r="2" fill="currentColor"/><path d="M12 19.5V22"/></svg></span>
           <span class="n">Step 1</span>
           <h3>Walk a loop</h3>
-          <p>Start the app, walk or run a closed loop, and finish where you started. Only walking and running count.</p>
+          <p>Head out and come back to where you started.</p>
         </li>
         <li class="step panel">
           <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5 19.8 7v9L12 20.5 4.2 16V7Z"/><path d="M12 8.2 15.2 10v3.8L12 15.6 8.8 13.8V10Z" fill="currentColor"/></svg></span>
           <span class="n">Step 2</span>
           <h3>Claim the blocks</h3>
-          <p>Every block whose centre is inside your loop takes your colour and your flag. Bigger loops make stronger claims.</p>
+          <p>Everything inside your loop turns your colour.</p>
         </li>
         <li class="step panel">
           <span class="ico rival" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="12" r="4"/><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/><path d="M17 4.5 21 3l-1.5 4"/></svg></span>
           <span class="n">Step 3</span>
           <h3>Steal with bigger loops</h3>
-          <p>A neighbour takes your blocks only with a loop of more blocks than yours. You get an alert with the size it takes to win them back.</p>
+          <p>Walk a bigger loop to take your neighbours' streets. They'll want them back.</p>
         </li>
         <li class="step panel">
           <span class="ico gold" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v10H4z"/><path d="M3 7h18v3H3zM12 7v13"/><path d="M12 7c-1.5-3-5-3.5-5-1.2C7 7 9.5 7 12 7Zm0 0c1.5-3 5-3.5 5-1.2C17 7 14.5 7 12 7Z"/></svg></span>
           <span class="n">Step 4</span>
-          <h3>Win shop rewards</h3>
-          <p>Some blocks hold a partner shop. Hold that block the longest by the end of the week and its reward is yours.</p>
+          <h3>Win local rewards</h3>
+          <p>Hold a local business's block all week and its prize is yours.</p>
         </li>
       </ol>
     </div>
@@ -295,16 +267,7 @@
       <div class="copy panel">
         <p class="over"><b>02</b>Points and wallet</p>
         <h2 id="points-title">Every walk earns points.</h2>
-        <div class="rates">
-          <p class="rate"><b>1 point</b><span>for every 10 m you walk</span></p>
-          <p class="rate"><b>+10 points</b><span>for every block you claim</span></p>
-        </div>
-        <p class="eg">A 520 m loop that claims 7 blocks earns <strong>52 + 70 = 122 points</strong>.</p>
-        <ol class="flow">
-          <li><p>Exchange your points for offers at shops near you: a coffee, a pastry, money off.</p></li>
-          <li><p>The voucher lands in your in-app wallet.</p></li>
-          <li><p>Show it at the counter and the shop redeems it.</p></li>
-        </ol>
+        <p>The more you walk, the more you earn. Spend points on treats from the businesses on your street, then show the voucher at the counter.</p>
       </div>
       <figure class="wallet panel" aria-labelledby="wallet-cap">
         <div class="wallet-head">
@@ -329,11 +292,11 @@
       <div class="copy panel">
         <p class="over"><b>03</b>For shops</p>
         <h2 id="shops-title">Put up a prize. <span class="gold">Pay only when someone walks in.</span></h2>
-        <p>Local businesses put up prizes and offers for the neighbourhood. Walkers come to your door to claim them, and you pay a small fee only for each voucher redeemed at your counter, invoiced through Whop. No listing fee, no monthly plan.</p>
+        <p>Turn your neighbourhood into regulars. Walkers come to your door to claim your prize, and you pay only when one is redeemed at your counter.</p>
         <ul class="facts">
-          <li><b>New feet</b>People walk loops around your block to win your reward.</li>
-          <li><b>Per redemption</b>A small fee only when a voucher is used in person.</li>
-          <li><b>Whop invoices</b>Each fee arrives as an invoice with a payment link.</li>
+          <li><b>New faces</b>Locals walk past your door to win your prize.</li>
+          <li><b>Pay per visit</b>No listing fee, no monthly plan.</li>
+          <li><b>Regulars</b>A reason to come back every week.</li>
         </ul>
         <div class="row">
           <a class="btn gold" href="mailto:lasso.partners@example.com?subject=Partner%20with%20Lasso">
@@ -350,59 +313,24 @@
       <div class="copy panel">
         <p class="over"><b>04</b>Get the app</p>
         <h2 id="get-title">Your neighbourhood is still unclaimed.</h2>
-        <p>Nothing to install. Lasso runs in your browser on any phone or laptop.</p>
+        <p>Play in your browser right now, or get the app on your phone.</p>
         <div class="ways">
           <a class="way primary" href="./app/">
             <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5Z"/></svg></span>
-            <span><b>Play in your browser</b><small>Opens the game right here. Allow location while the page is open.</small></span>
-          </a>
-          <a class="way" href="https://app.revyl.ai/tests/report?token=2903123c-f791-45a8-9e96-37b03be6db72" rel="noopener">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
-            <span><b>Watch it run on a cloud iPhone (Revyl)</b><small>A recorded test run of the iOS build on a Revyl cloud device.</small></span>
+            <span><b>Play in your browser</b><small>Works on any phone or laptop.</small></span>
           </a>
         </div>
-        <p class="soon"><b>Accounts on the web: coming soon.</b> Sign up and log in happen in the app for now.</p>
       </div>
       <div class="qrcard panel" id="native" aria-labelledby="native-title">
-        <h3 id="native-title">Full native app in Expo Go</h3>
+        <h3 id="native-title">Get the app on your phone</h3>
         <div class="qr" id="qr" role="img" aria-label="QR code that opens Lasso in Expo Go">Loading QR code…</div>
-        <p class="native-steps">Install Expo Go from the <a href="https://apps.apple.com/app/expo-go/id982107779" rel="noopener">App Store</a> or <a href="https://play.google.com/store/apps/details?id=host.exp.exponent" rel="noopener">Google Play</a>, then scan the code with your camera or tap below.</p>
+        <p class="native-steps">Get the free Expo Go app (<a href="https://apps.apple.com/app/expo-go/id982107779" rel="noopener">iPhone</a> or <a href="https://play.google.com/store/apps/details?id=host.exp.exponent" rel="noopener">Android</a>), then scan this code with your camera.</p>
         <a class="btn ghost small" id="open-app" href="#" rel="noopener">Open in Expo Go</a>
         <p class="applink" id="app-link-text"></p>
       </div>
     </div>
   </section>
 
-  <section class="sec" id="built" data-scene aria-labelledby="built-title">
-    <div class="wrap">
-      <div class="copy panel">
-        <p class="over"><b>05</b>Built with</p>
-        <h2 id="built-title">Made in one day with four tools.</h2>
-      </div>
-      <ul class="stack">
-        <li class="panel"><span class="role">Backend</span><h3>Convex</h3><p>Every game rule runs server side. A capture is one transaction, and the map updates live on every phone.</p></li>
-        <li class="panel"><span class="role">Coding agent</span><h3>Capy</h3><p>Agents built the big-screen live map, ran the device builds and tests, and shipped this website.</p></li>
-        <li class="panel"><span class="role">Cloud devices</span><h3>Revyl</h3><p>The iOS build runs on cloud iPhones, with smoke tests and proof of changes on every pull request.</p></li>
-        <li class="panel"><span class="role">Payments</span><h3>Whop</h3><p>Each reward redemption creates a Whop invoice, so the shop pays its small fee through a hosted payment link.</p></li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="sec" id="faq" aria-labelledby="faq-title">
-    <div class="wrap">
-      <div class="copy panel">
-        <p class="over"><b>06</b>FAQ</p>
-        <h2 id="faq-title">Questions</h2>
-      </div>
-      <div class="faq">
-        <details><summary>Is Lasso free?</summary><p>Yes. Players pay nothing. Shops fund the rewards and pay a small fee only when a voucher is redeemed.</p></details>
-        <details><summary>Does it track me in the background?</summary><p>No. Lasso only uses your location while the app is open on your screen. Close it and tracking stops.</p></details>
-        <details><summary>How big are blocks?</summary><p>Blocks are hexagons about 50 m across. A square loop of about 130 m a side, a six-minute walk, claims around 7 blocks.</p></details>
-        <details><summary>How do shops pay?</summary><p>Per redemption. Each time a voucher is used at the counter, the shop gets a Whop invoice for a small fee with a link to pay it.</p></details>
-        <details><summary>Does it work on Android?</summary><p>Yes. Play in the browser on any Android phone, or install Expo Go from Google Play for the full native app.</p></details>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer>
@@ -417,7 +345,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha512-ZDSPMa/JM1D+7kdg2x3BsruQ6T/JpJo3jWDWkCZsP+5yVyp1KfESqLI+7RqB5k24F7p2cV7i2YHh/890y6P6Sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-var APP_LINK = "https://expo.dev/accounts/yc-hackathon/projects/yc-hackathon";
+var APP_LINK = "exp://u.expo.dev/645c8e44-232b-4039-89fa-150e9db327f5?channel-name=production";
 
 /* ------------------------------------------------------------------
    Lasso public site. One file.
